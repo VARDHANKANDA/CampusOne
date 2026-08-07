@@ -5,13 +5,16 @@ import { describe, expect, it } from "vitest";
 
 import { AppShell } from "@/components/layout/AppShell";
 import type { Role } from "@/core/auth/types";
+import { ThemeProvider } from "@/core/theme/ThemeContext";
 import { makeUser, withFakeAuth } from "@/test/authTestUtils";
 
 function renderShell(role: Role): void {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter>{withFakeAuth(makeUser({ role }), <AppShell>content</AppShell>)}</MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>{withFakeAuth(makeUser({ role }), <AppShell>content</AppShell>)}</MemoryRouter>
+      </ThemeProvider>
     </QueryClientProvider>,
   );
 }

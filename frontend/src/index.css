@@ -2,41 +2,96 @@
 @tailwind components;
 @tailwind utilities;
 
-/* docs/UI_UX.md §3.1 — token palette with dark-mode overrides */
+/* Premium SaaS styling tokens & color overrides */
 :root {
-  --bg-canvas: #f6f4ef;
-  --text-primary: #1b2a4a;
-  --text-secondary: #64748b;
+  --bg-canvas: #f8fafc;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
   --card-bg: #ffffff;
-  --card-border: rgba(100, 116, 139, 0.15);
+  --card-border: rgba(226, 232, 240, 0.8);
 
-  --ink-navy: #1b2a4a;
-  --brass: #b8863e;
-  --brass-light: #d9b876;
-  --quad-green: #3f6b4f;
-  --brick: #a8412c;
-  --chalk: #f6f4ef;
+  --ink-navy: #4f46e5;
+  --brass: #8b5cf6;
+  --brass-light: #06b6d4;
+  --quad-green: #10b981;
+  --brick: #f43f5e;
+  --chalk: #ffffff;
   --slate: #64748b;
 }
 
 .dark {
-  --bg-canvas: #090e18;
-  --text-primary: #f6f4ef;
+  --bg-canvas: #030712;
+  --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
-  --card-bg: #111a2e;
-  --card-border: rgba(148, 163, 184, 0.15);
+  --card-bg: #0f172a;
+  --card-border: rgba(30, 41, 59, 0.8);
 
-  --ink-navy: #f6f4ef;
-  --brass: #d9b876;
-  --brass-light: #f3dca2;
-  --quad-green: #4ade80;
-  --brick: #f87171;
-  --chalk: #090e18;
+  --ink-navy: #6366f1;
+  --brass: #a78bfa;
+  --brass-light: #22d3ee;
+  --quad-green: #34d399;
+  --brick: #fb7185;
+  --chalk: #030712;
   --slate: #94a3b8;
 }
 
 body {
   @apply bg-[var(--bg-canvas)] text-[var(--text-primary)] font-body antialiased transition-colors duration-200;
+  background-image: radial-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 0), radial-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 0);
+  background-size: 40px 40px;
+  background-position: 0 0, 20px 20px;
+}
+
+.saas-grid-bg {
+  background-image: radial-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 0), radial-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 0);
+  background-size: 40px 40px;
+  background-position: 0 0, 20px 20px;
+}
+
+.dark .saas-grid-bg {
+  background-image: radial-gradient(rgba(99, 102, 241, 0.15) 1px, transparent 0), radial-gradient(rgba(139, 92, 246, 0.15) 1px, transparent 0);
+  background-size: 40px 40px;
+  background-position: 0 0, 20px 20px;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.15);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
+}
+
+/* Modern glassmorphism container helper */
+.glass-panel {
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.5);
+}
+
+.dark .glass-panel {
+  background-color: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(30, 41, 59, 0.5);
+}
+
+/* Custom interactive transition helper */
+.saas-interactive {
+  @apply transition-all duration-300 ease-out;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -48,4 +103,3 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
-

@@ -17,10 +17,10 @@ export function Button({
   ...rest
 }: ButtonProps): React.JSX.Element {
   const base =
-    "inline-flex items-center justify-center gap-2 rounded-plaque px-4 py-2 font-body text-sm font-medium transition active:shadow-level-4 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass focus-visible:ring-offset-2";
+    "inline-flex items-center justify-center gap-2 rounded-plaque px-4 py-2 font-body text-sm font-semibold transition-all duration-200 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-navy focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900";
   const variants = {
-    primary: "bg-ink-navy text-chalk hover:bg-ink-navy/90 shadow-level-1 hover:shadow-level-2",
-    secondary: "border border-slate/30 text-ink-navy hover:bg-chalk",
+    primary: "bg-gradient-to-r from-ink-navy via-ink-navy/90 to-brass text-white shadow-md shadow-indigo-500/10 hover:shadow-lg hover:shadow-indigo-500/20 border border-transparent",
+    secondary: "border border-card-border bg-card-bg/40 backdrop-blur-sm text-text-primary hover:bg-card-bg hover:border-slate-300 dark:hover:border-slate-700 shadow-sm",
   };
 
   return (

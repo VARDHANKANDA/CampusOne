@@ -1,3 +1,5 @@
+import type { Complaint } from "@/features/complaint/types";
+
 export type MaintenanceRequestStatus = "pending" | "in_progress" | "completed";
 
 export interface MaintenanceRequest {
@@ -10,4 +12,5 @@ export interface MaintenanceRequest {
   actual_completion: string | null;
   completion_photo_url: string | null;
   feedback: string | null;
+  complaint?: Complaint;
 }

@@ -61,23 +61,23 @@ export function AppShell({ children }: { children: ReactNode }): React.JSX.Eleme
       <CommandPalette />
       
       {/* Sidebar Navigation */}
-      <aside className="flex w-64 flex-col border-r border-card-border bg-[#111827] text-slate-300 dark:bg-[#0b101c]">
-        <div className="px-5 py-6">
-          <p className="font-display text-lg font-semibold tracking-wide text-chalk">Smart Campus</p>
-          <p className="font-body text-xs text-brass">{ROLE_LABEL[user.role]}</p>
+      <aside className="flex w-64 flex-col border-r border-slate-200 dark:border-slate-800 bg-[#0b0f19] text-slate-300">
+        <div className="px-6 py-6 border-b border-slate-800/60">
+          <p className="font-display text-xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent">Smart Campus</p>
+          <p className="font-body text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-slate-800/40 px-2.5 py-1 rounded-full w-max mt-2 border border-slate-800">{ROLE_LABEL[user.role]}</p>
         </div>
         
-        <nav className="flex-1 px-3 py-2 space-y-1">
+        <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
           {navItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
               end={item.path === "/"}
               className={({ isActive }) =>
-                `flex items-center gap-3 rounded-plaque px-3 py-2 font-body text-sm font-medium transition ${
+                `flex items-center gap-3 rounded-plaque px-3.5 py-2.5 font-body text-xs font-semibold tracking-wide transition-all duration-200 ${
                   isActive
-                    ? "bg-brass/10 border-l-4 border-brass text-chalk"
-                    : "border-l-4 border-transparent text-slate-400 hover:bg-white/5 hover:text-chalk"
+                    ? "bg-gradient-to-r from-ink-navy/25 to-brass/10 border-l-[3px] border-ink-navy text-white shadow-sm shadow-indigo-500/5"
+                    : "border-l-[3px] border-transparent text-slate-400 hover:bg-slate-800/40 hover:text-white"
                 }`
               }
             >
@@ -87,12 +87,12 @@ export function AppShell({ children }: { children: ReactNode }): React.JSX.Eleme
         </nav>
 
         {/* User profile section */}
-        <div className="border-t border-card-border px-5 py-4 bg-black/10">
-          <p className="truncate font-body text-xs font-semibold text-chalk/90">{user.full_name || user.email}</p>
-          <p className="truncate font-body text-[10px] text-slate">{user.email}</p>
+        <div className="border-t border-slate-850 px-6 py-5 bg-black/20 flex flex-col gap-1">
+          <p className="truncate font-body text-xs font-bold text-white/90">{user.full_name || user.email}</p>
+          <p className="saas-interactive truncate font-body text-[10px] text-slate-400">{user.email}</p>
           <button
             onClick={() => void logout()}
-            className="mt-2 font-body text-xs font-medium text-brass hover:underline transition"
+            className="w-max mt-2 font-body text-[11px] font-semibold text-rose-400 hover:text-rose-300 hover:underline transition-colors duration-200"
           >
             Sign out
           </button>
@@ -100,19 +100,19 @@ export function AppShell({ children }: { children: ReactNode }): React.JSX.Eleme
       </aside>
 
       {/* Main Panel */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Header */}
-        <header className="flex h-14 items-center justify-between border-b border-card-border bg-card-bg/60 backdrop-blur-md px-6">
+        <header className="flex h-16 items-center justify-between border-b border-card-border bg-card-bg/30 backdrop-blur-md px-8 flex-shrink-0">
           {/* Breadcrumbs Wayfinding */}
-          <nav className="flex items-center gap-1.5 text-xs text-slate" aria-label="Breadcrumb">
-            <Link to="/" className="hover:text-brass transition">Home</Link>
+          <nav className="flex items-center gap-2 text-xs text-text-secondary" aria-label="Breadcrumb">
+            <Link to="/" className="hover:text-ink-navy transition-colors duration-200 font-medium">Home</Link>
             {breadcrumbs.map((bc) => (
-              <span key={bc.url} className="flex items-center gap-1.5">
-                <span>/</span>
+              <span key={bc.url} className="flex items-center gap-2">
+                <span className="text-slate-400 dark:text-slate-600 font-light">/</span>
                 {bc.isLast ? (
-                  <span className="font-medium text-text-primary">{bc.label}</span>
+                  <span className="font-bold text-text-primary">{bc.label}</span>
                 ) : (
-                  <Link to={bc.url} className="hover:text-brass transition">{bc.label}</Link>
+                  <Link to={bc.url} className="hover:text-ink-navy transition-colors duration-200 font-medium">{bc.label}</Link>
                 )}
               </span>
             ))}
@@ -130,27 +130,27 @@ export function AppShell({ children }: { children: ReactNode }): React.JSX.Eleme
                 });
                 window.dispatchEvent(event);
               }}
-              className="flex items-center gap-2 rounded-plaque border border-card-border bg-canvas/30 px-3 py-1.5 text-xs text-slate hover:bg-canvas transition"
+              className="flex items-center gap-3 rounded-plaque border border-card-border bg-card-bg/40 px-3.5 py-2 text-xs text-text-secondary hover:bg-card-bg hover:border-slate-350 dark:hover:border-slate-750 shadow-sm transition-all duration-200"
             >
-              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <svg className="h-3.5 w-3.5 text-text-secondary/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <span>Search...</span>
-              <kbd className="rounded bg-canvas/80 px-1 py-0.5 text-[9px] font-mono">Ctrl+K</kbd>
+              <kbd className="rounded bg-slate-200/60 dark:bg-slate-800/80 px-1.5 py-0.5 text-[9px] font-mono text-text-secondary font-bold">Ctrl+K</kbd>
             </button>
 
             {/* Theme Switcher Toggle */}
             <button
               onClick={toggleTheme}
-              className="rounded-plaque p-2 text-slate hover:bg-canvas hover:text-text-primary transition"
+              className="rounded-plaque p-2 border border-card-border bg-card-bg/40 text-text-secondary hover:bg-card-bg hover:text-text-primary hover:border-slate-300 dark:hover:border-slate-700 shadow-sm transition-all duration-200"
               aria-label={`Switch to ${theme === "light" ? "dark" : "light"} theme`}
             >
               {theme === "light" ? (
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
                 </svg>
               ) : (
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <circle cx="12" cy="12" r="5" />
                   <line x1="12" y1="1" x2="12" y2="3" />
                   <line x1="12" y1="21" x2="12" y2="23" />

@@ -28,6 +28,11 @@ const COMPLAINTS: Complaint[] = [
     assigned_to: null,
     created_at: "2026-01-01T00:00:00Z",
     updated_at: "2026-01-01T00:00:00Z",
+    sla_due_at: null,
+    sla_breached: false,
+    escalated_to_admin: false,
+    feedback: null,
+    cost: null,
   },
   {
     id: "22222222-2222-2222-2222-222222222222",
@@ -41,6 +46,11 @@ const COMPLAINTS: Complaint[] = [
     assigned_to: "staff-1",
     created_at: "2026-01-02T00:00:00Z",
     updated_at: "2026-01-02T00:00:00Z",
+    sla_due_at: null,
+    sla_breached: false,
+    escalated_to_admin: false,
+    feedback: null,
+    cost: null,
   },
 ];
 
@@ -57,6 +67,11 @@ describe("MyComplaintsPage", () => {
     renderWithQueryClient(<MyComplaintsPage />);
 
     await waitFor(() => expect(screen.getAllByText(/submitted|completed/i)).toHaveLength(2));
-    expect(screen.getAllByRole("button", { name: /verify/i })).toHaveLength(1);
+
+    // Expand the completed card to render the approve/verify panel
+    const completedCardHeader = screen.getByText("Flickering light");
+    completedCardHeader.click();
+
+    expect(await screen.findByRole("button", { name: /approve & verify resolution/i })).toBeInTheDocument();
   });
 });

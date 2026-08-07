@@ -283,30 +283,30 @@ export function DashboardPage(): React.JSX.Element {
     switch (user.role) {
       case "student":
         return [
-          { label: "Book a Lab", path: "/labs/reserve", style: "border border-brass/30 text-brass hover:bg-brass/5" },
-          { label: "Report Hostel Issue", path: "/complaints/new", style: "bg-ink-navy text-chalk hover:bg-ink-navy/90" },
-          { label: "Scan Class QR", path: "/attendance/scan", style: "bg-brass text-ink-navy hover:bg-brass/90 font-semibold" },
+          { label: "Book a Lab", path: "/labs/reserve", style: "border border-brass/30 text-brass hover:bg-brass/10 hover:border-brass/50 transition-all duration-200" },
+          { label: "Report Hostel Issue", path: "/complaints/new", style: "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-indigo-500/10 hover:shadow-md transition-all duration-200" },
+          { label: "Scan Class QR", path: "/attendance/scan", style: "bg-gradient-to-r from-brass to-brass-light text-white hover:opacity-95 font-semibold transition-all duration-200 shadow-sm shadow-purple-500/10 hover:shadow-md" },
         ];
       case "faculty":
         return [
-          { label: "Schedule Seminar/Event", path: "/events/new", style: "border border-brass/30 text-brass hover:bg-brass/5" },
-          { label: "Book Lecture Hall", path: "/bookings/new", style: "bg-ink-navy text-chalk hover:bg-ink-navy/90" },
-          { label: "Start QR Attendance", path: "/attendance/generate", style: "bg-brass text-ink-navy hover:bg-brass/90 font-semibold" },
+          { label: "Schedule Seminar/Event", path: "/events/new", style: "border border-brass/30 text-brass hover:bg-brass/10 hover:border-brass/50 transition-all duration-200" },
+          { label: "Book Lecture Hall", path: "/bookings/new", style: "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-indigo-500/10 hover:shadow-md transition-all duration-200" },
+          { label: "Start QR Attendance", path: "/attendance/generate", style: "bg-gradient-to-r from-brass to-brass-light text-white hover:opacity-95 font-semibold transition-all duration-200 shadow-sm shadow-purple-500/10 hover:shadow-md" },
         ];
       case "warden":
         return [
-          { label: "Complaints Queue", path: "/complaints/queue", style: "bg-ink-navy text-chalk hover:bg-ink-navy/90" },
-          { label: "Assigned Status Reports", path: "/complaints/assign", style: "border border-brass/30 text-brass hover:bg-brass/5" },
+          { label: "Complaints Queue", path: "/complaints/queue", style: "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-indigo-500/10 hover:shadow-md transition-all duration-200" },
+          { label: "Assigned Status Reports", path: "/complaints/assign", style: "border border-brass/30 text-brass hover:bg-brass/10 hover:border-brass/50 transition-all duration-200" },
         ];
       case "maintenance_staff":
         return [
-          { label: "Open Tasks List", path: "/maintenance/tasks", style: "bg-ink-navy text-chalk hover:bg-ink-navy/90" },
+          { label: "Open Tasks List", path: "/maintenance/tasks", style: "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-indigo-500/10 hover:shadow-md transition-all duration-200" },
         ];
       case "admin":
         return [
-          { label: "Users Registry", path: "/admin/users", style: "border border-brass/30 text-brass hover:bg-brass/5" },
-          { label: "Manage Classrooms", path: "/admin/rooms", style: "bg-ink-navy text-chalk hover:bg-ink-navy/90" },
-          { label: "Audit Trails", path: "/admin/audit-logs", style: "bg-brass text-ink-navy hover:bg-brass/90 font-semibold" },
+          { label: "Users Registry", path: "/admin/users", style: "border border-brass/30 text-brass hover:bg-brass/10 hover:border-brass/50 transition-all duration-200" },
+          { label: "Manage Classrooms", path: "/admin/rooms", style: "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-indigo-500/10 hover:shadow-md transition-all duration-200" },
+          { label: "Audit Trails", path: "/admin/audit-logs", style: "bg-gradient-to-r from-brass to-brass-light text-white hover:opacity-95 font-semibold transition-all duration-200 shadow-sm shadow-purple-500/10 hover:shadow-md" },
         ];
       default:
         return [];
@@ -316,20 +316,20 @@ export function DashboardPage(): React.JSX.Element {
   return (
     <div className="flex flex-col gap-6">
       {/* Welcome Banner */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 rounded-plaque border border-card-border bg-card-bg p-6 shadow-level-1">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 rounded-plaque border border-card-border bg-card-bg/60 backdrop-blur-sm p-6 shadow-sm">
         <div>
-          <h1 className="font-display text-2xl font-semibold text-text-primary">Welcome back, {user.full_name || user.email}</h1>
-          <p className="mt-1 font-body text-sm text-slate">{ROLE_LABEL[user.role]} Console · Campus operations digitized</p>
+          <h1 className="font-display text-2xl font-bold text-text-primary tracking-tight">Welcome back, {user.full_name || user.email}</h1>
+          <p className="mt-1 font-body text-xs text-text-secondary font-medium">{ROLE_LABEL[user.role]} Console · Campus operations digitized</p>
         </div>
 
         {/* Live Weather Widget Mockup */}
-        <div className="flex items-center gap-3 bg-canvas/60 px-4 py-2 rounded-plaque border border-card-border">
-          <svg className="h-8 w-8 text-brass animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <div className="flex items-center gap-3 bg-card-bg/40 backdrop-blur-sm px-4 py-2 rounded-plaque border border-card-border shadow-sm">
+          <svg className="h-6 w-6 text-amber-500 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
           </svg>
           <div className="text-right">
-            <div className="text-xs font-bold text-text-primary">Campus Temp</div>
-            <div className="text-xs text-slate">78°F Sunny · Light breeze</div>
+            <div className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Campus Temp</div>
+            <div className="text-xs font-bold text-text-primary mt-0.5">78°F · Sunny</div>
           </div>
         </div>
       </div>
@@ -393,7 +393,11 @@ export function DashboardPage(): React.JSX.Element {
                         </span>
                       </div>
                       <p className="text-xs text-slate mt-0.5 line-clamp-2">
-                        {n.payload?.message || `Referenced entity ID: ${n.payload?.booking_id || n.payload?.room_id || "System Action"}`}
+                        {typeof n.payload.message === "string"
+                          ? n.payload.message
+                          : `Referenced entity ID: ${
+                              n.payload.booking_id ?? n.payload.room_id ?? "System Action"
+                            }`}
                       </p>
                     </li>
                   ))}

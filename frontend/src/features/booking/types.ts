@@ -10,6 +10,9 @@ export interface Booking {
   end_time: string;
   status: BookingStatus;
   purpose: string | null;
+  room?: Room;
+  recurrence_type?: string;
+  seat_number?: number | null;
 }
 
 export interface AvailabilityResult {

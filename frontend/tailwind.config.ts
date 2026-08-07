@@ -21,12 +21,12 @@ export default {
         "card-border": "var(--card-border)",
       },
       fontFamily: {
-        display: ["Fraunces", "Georgia", "serif"],
-        body: ["Inter", "IBM Plex Sans", "system-ui", "sans-serif"],
+        display: ["Plus Jakarta Sans", "Outfit", "Inter", "system-ui", "sans-serif"],
+        body: ["Inter", "system-ui", "sans-serif"],
         mono: ["IBM Plex Mono", "ui-monospace", "monospace"],
       },
       borderRadius: {
-        plaque: "6px",
+        plaque: "12px",
       },
       boxShadow: {
         "level-1": "0 1px 2px rgba(27,42,74,0.08), 0 1px 1px rgba(27,42,74,0.04)",

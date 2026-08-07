@@ -85,9 +85,9 @@ export function RegisterPage(): React.JSX.Element {
           Create account
         </Button>
       </form>
-      <p className="mt-6 font-body text-sm text-slate">
+      <p className="mt-6 font-body text-sm text-text-secondary">
         Already have an account?{" "}
-        <Link to="/login" className="text-brass hover:underline">
+        <Link to="/login" className="font-semibold text-ink-navy hover:underline transition-colors duration-200">
           Sign in
         </Link>
       </p>

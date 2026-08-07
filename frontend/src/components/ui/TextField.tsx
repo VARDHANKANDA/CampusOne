@@ -15,7 +15,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
 
     return (
       <div className="flex flex-col gap-1">
-        <label htmlFor={inputId} className="font-body text-sm font-medium text-ink-navy">
+        <label htmlFor={inputId} className="font-body text-xs font-semibold tracking-wide uppercase text-text-secondary/90">
           {label}
         </label>
         <input
@@ -23,7 +23,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
           ref={ref}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? `${inputId}-error` : undefined}
-          className={`rounded-plaque border border-slate/30 bg-chalk px-3 py-2 font-body text-sm text-ink-navy shadow-[inset_0_1px_2px_rgba(27,42,74,0.08)] focus:border-brass focus:outline-none focus:ring-2 focus:ring-brass/40 ${className}`}
+          className={`rounded-plaque border border-card-border bg-card-bg px-3.5 py-2 font-body text-sm text-text-primary transition-all duration-200 hover:border-slate-300 dark:hover:border-slate-700 focus:border-ink-navy focus:outline-none focus:ring-4 focus:ring-ink-navy/15 ${className}`}
           {...rest}
         />
         {error && (

@@ -16,4 +16,5 @@ export interface Room {
   equipment_tags: string[];
   is_active: boolean;
   requires_approval: boolean;
+  building?: Building;
 }
