@@ -1,0 +1,44 @@
+# Local development only (docs/DEPLOYMENT.md §4.3).
+# Local Postgres stands in for the database in local dev when a contributor
+# doesn't have a Supabase dev project handy. Auth/Storage/Realtime still
+# require a real Supabase project — point SUPABASE_URL/keys at it even
+# when using this local Postgres for DATABASE_URL.
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: campus
+      POSTGRES_PASSWORD: campus
+      POSTGRES_DB: smart_campus
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U campus -d smart_campus"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      DATABASE_URL: postgresql+psycopg://campus:campus@postgres:5432/smart_campus
+      ENV: local
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend/app:/app/app
+      - ./backend/migrations:/app/migrations
+
+volumes:
+  postgres_data:

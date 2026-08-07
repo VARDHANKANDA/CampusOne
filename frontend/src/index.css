@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* docs/UI_UX.md §3.1 — the full and only palette, exposed as CSS custom
+   properties for the rare case a component needs a raw value instead of a
+   Tailwind utility (e.g. Chart.js series colors). */
+:root {
+  --ink-navy: #1b2a4a;
+  --brass: #b8863e;
+  --brass-light: #d9b876;
+  --quad-green: #3f6b4f;
+  --brick: #a8412c;
+  --chalk: #f6f4ef;
+  --slate: #64748b;
+}
+
+body {
+  @apply bg-chalk text-ink-navy font-body antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
