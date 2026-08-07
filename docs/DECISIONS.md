@@ -376,7 +376,24 @@ This log records significant technical/product decisions, the alternatives consi
 
 ---
 
-## ADR-022 (Template for Future Entries)
+## ADR-022: `get_supabase_client()` builds a fresh client per call instead of caching one for the process lifetime
+
+**Date:** 2026-08-07
+**Status:** Accepted
+
+**Context:** `core/supabase.py::get_supabase_client()` was `@lru_cache`d, so every request reused the same `Client` — and its pooled HTTP/2 connection — for as long as the backend process ran. Manual testing surfaced the real-world consequence: the first request after backend startup succeeded, but requests made tens of minutes later on the same idle connection started failing with `403 bad_jwt` from Supabase's edge, on every SDK call (`admin.create_user`, `sign_in_with_password`) — even though the exact same service-role key worked immediately when sent over a fresh connection (verified directly with `curl`). Because `register`'s except block caught and generically re-raised without logging, this presented to users as three seemingly-unrelated symptoms: registration says "may already be registered" (masking the real 403), login then fails for real since no account was ever created, and password reset "succeeds" (`202`) but sends nothing, because `/auth/v1/recover` returns success unconditionally to avoid leaking which emails are registered.
+
+**Decision:** Remove the `@lru_cache` — `get_supabase_client()` now constructs a new `Client` (and therefore a fresh connection) on every call. Also added `logger.exception(...)` in `register`'s except block so a real failure like this is visible in logs immediately instead of requiring log-diving across `httpx`'s own request-level logging to find.
+
+**Alternatives Considered:**
+- Keep the cached client but configure shorter keep-alive/idle timeouts on its underlying `httpx` transport — rejected; more moving parts to get right, and still leaves a window where a connection can go stale between requests, whereas a fresh client per call removes the failure mode by construction.
+- Diagnose and fix whatever specifically causes the idle connection to go stale (network middlebox, Cloudflare edge behavior, `h2` library issue) — rejected as the primary fix; the auth endpoints are low-frequency (register/login/logout/password-reset, not a hot path), so the one extra TLS handshake per call this costs is a good trade for eliminating an entire class of intermittent, hard-to-diagnose failures.
+
+**Consequences:** Every `get_supabase_client()` call now pays a fresh-connection cost (roughly one TLS handshake), which is negligible for these low-frequency endpoints. No caller-visible API change — the function signature and return type are unchanged.
+
+---
+
+## ADR-023 (Template for Future Entries)
 
 **Date:**
 **Status:** Proposed | Accepted | Superseded by ADR-XXX

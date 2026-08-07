@@ -46,6 +46,7 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)) -> UserPro
             }
         )
     except Exception as exc:  # Supabase SDK raises its own AuthApiError subclasses
+        logger.exception("Supabase user creation failed for %s", payload.email)
         raise AppError(
             code="REGISTRATION_FAILED",
             message="Could not create account. The email may already be registered.",
