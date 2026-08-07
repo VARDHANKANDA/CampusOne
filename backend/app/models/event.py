@@ -2,11 +2,11 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Computed, DateTime, Enum, ForeignKey, String
+from sqlalchemy import Computed, DateTime, ForeignKey, String
 from sqlalchemy.dialects.postgresql import TSTZRANGE, UUID, ExcludeConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.models.base import Base, UUIDPrimaryKeyMixin
+from app.models.base import Base, UUIDPrimaryKeyMixin, pg_enum
 
 
 class EventStatus(str, enum.Enum):
@@ -33,7 +33,7 @@ class Event(UUIDPrimaryKeyMixin, Base):
         Computed("tstzrange(start_time, end_time, '[)')", persisted=True),
     )
     status: Mapped[EventStatus] = mapped_column(
-        Enum(EventStatus, name="event_status"), nullable=False, default=EventStatus.SCHEDULED
+        pg_enum(EventStatus, name="event_status"), nullable=False, default=EventStatus.SCHEDULED
     )
 
     __table_args__ = (

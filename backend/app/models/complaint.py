@@ -1,11 +1,11 @@
 import enum
 import uuid
 
-from sqlalchemy import Enum, ForeignKey, Text
+from sqlalchemy import ForeignKey, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.models.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
+from app.models.base import Base, TimestampMixin, UUIDPrimaryKeyMixin, pg_enum
 
 
 class ComplaintCategory(str, enum.Enum):
@@ -49,7 +49,7 @@ class Complaint(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         UUID(as_uuid=True), ForeignKey("users.id", ondelete="RESTRICT"), nullable=False
     )
     category: Mapped[ComplaintCategory] = mapped_column(
-        Enum(ComplaintCategory, name="complaint_category"), nullable=False
+        pg_enum(ComplaintCategory, name="complaint_category"), nullable=False
     )
     description: Mapped[str] = mapped_column(Text, nullable=False)
     image_url: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -57,10 +57,10 @@ class Complaint(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     # problem isn't overwritten by evidence of the fix (docs/DECISIONS.md ADR-014).
     completion_image_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     priority: Mapped[ComplaintPriority] = mapped_column(
-        Enum(ComplaintPriority, name="complaint_priority"), nullable=False
+        pg_enum(ComplaintPriority, name="complaint_priority"), nullable=False
     )
     status: Mapped[ComplaintStatus] = mapped_column(
-        Enum(ComplaintStatus, name="complaint_status"),
+        pg_enum(ComplaintStatus, name="complaint_status"),
         nullable=False,
         default=ComplaintStatus.SUBMITTED,
     )

@@ -41,6 +41,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). This fi
 
 All 14 modules from `master-prompt.md`'s Project Identity are now implemented, backend and frontend, each verified against its own test suite and the shared quality gates (`ruff`/`black`/`mypy`/`pytest` backend; `eslint`/`prettier`/`tsc`/`vitest`/`vite build` frontend).
 
+### Fixed
+- First run against a real Postgres/Supabase project (rather than the `FakeSupabaseClient` test double) surfaced two bugs invisible to the test suite: every enum-typed column was writing the Python member's `.name` instead of its `.value` (`DECISIONS.md` ADR-020), and JWT verification assumed every Supabase project signs with a shared HS256 secret, which isn't true for projects using Supabase's newer asymmetric signing keys (`DECISIONS.md` ADR-021). Both are fixed; registration and login now work end-to-end against a live Supabase project.
+- Alembic's `env.py` passed `DATABASE_URL` through `configparser`-backed `set_main_option` unescaped; a password containing a literal `%` (common in generated Supabase passwords) broke config interpolation. Fixed by escaping `%` to `%%` before it reaches the ini parser.
+
 ### Deferred (tracked, not forgotten)
 - The Reports & Analytics page doesn't have a date-range filter control yet, even though `GET /analytics/room-utilization` and `/analytics/maintenance` already accept `from`/`to` query params server-side — UI wiring for it is the remaining piece (`PRD.md` FR-12.2).
 - Data export (CSV/PDF) is explicitly a stretch goal in `PRD.md` FR-12.3/FR-7.3 and isn't implemented.

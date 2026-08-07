@@ -342,7 +342,41 @@ This log records significant technical/product decisions, the alternatives consi
 
 ---
 
-## ADR-020 (Template for Future Entries)
+## ADR-020: Python enum columns store `.value`, not `.name`, via a shared `pg_enum()` helper
+
+**Date:** 2026-08-07
+**Status:** Accepted
+
+**Context:** First end-to-end run against a real Postgres database (docs/DEPLOYMENT.md §4.3) surfaced that every `sa.Column`/`mapped_column` built with plain `sqlalchemy.Enum(SomePyEnum, name=...)` was inserting the Python enum member's *name* (e.g. `"STUDENT"`) rather than its `.value` (e.g. `"student"`). SQLAlchemy's `Enum` type defaults to `.name` unless told otherwise, but the Alembic migration (`0001_initial_schema.py`) creates the Postgres `ENUM` types with the lowercase `.value` labels (matching `docs/DATABASE.md`), so every insert/update through any of the 13 enum-typed columns (`users.role`, `rooms.type`, `bookings.status`, `complaints.category/priority/status`, etc.) failed with `InvalidTextRepresentation`. This had gone unnoticed through the whole build because the integration test suite runs against a `FakeSupabaseClient`/skips without a live Postgres (docs/TESTING.md) — there was no point before now where a real enum round-trip actually happened.
+
+**Decision:** Add `pg_enum(enum_cls, *, name)` in `app/models/base.py` — a thin wrapper around `sa.Enum(enum_cls, name=name, values_callable=lambda e: [m.value for m in e])` — and use it at all 13 call sites instead of bare `Enum(...)`.
+
+**Alternatives Considered:**
+- Rename every Python enum member to match its value in uppercase-free form (e.g. `student = "student"`) — rejected; fights PEP 8 (enum members are conventionally `UPPER_CASE`) purely to work around a library default, and would need to touch every reference to every member across services/schemas/tests.
+- Fix `values_callable` inline at each of the 13 call sites — rejected in favor of one shared helper once the third near-identical occurrence made the duplication obvious; the lambda is non-obvious boilerplate worth explaining once.
+
+**Consequences:** Every enum-typed model imports `pg_enum` from `app.models.base` instead of `sqlalchemy.Enum` directly. No migration change was needed — the Postgres `ENUM` type definitions were already correct; only the Python-side value SQLAlchemy sent was wrong.
+
+---
+
+## ADR-021: JWT verification supports both legacy HS256 (shared secret) and current Supabase asymmetric signing (ES256/RS256 via JWKS)
+
+**Date:** 2026-08-07
+**Status:** Accepted
+
+**Context:** `docs/SECURITY.md` §1-2 and the original `core/security.py` assumed every Supabase project signs Auth JWTs with a single shared HS256 secret (`JWT_SECRET`), verified locally with no network call. Testing against a newly-created Supabase project showed this is no longer the default: new projects sign tokens with an asymmetric key (this project uses ES256) and publish the corresponding public key at `{SUPABASE_URL}/auth/v1/.well-known/jwks.json`, keyed by `kid`. A shared "JWT secret" from such a project's dashboard does not verify its own tokens — decoding with `algorithms=["HS256"]` against it fails every request with `UNAUTHORIZED`, including the one issued by `POST /auth/login` moments earlier.
+
+**Decision:** `_decode_token` now reads the token's own unverified `alg` header first. If `alg == "HS256"`, it verifies against `settings.jwt_secret` exactly as before (this keeps `tests/integration/auth_helpers.py`, which mints HS256 test tokens directly, working unchanged). For any other `alg`, it fetches the project's JWKS (cached in-process for 1 hour), finds the key matching the token's `kid`, and verifies against that. Both paths converge on the same `jwt.decode(..., audience="authenticated")` call.
+
+**Alternatives Considered:**
+- Tell every deployer to switch their Supabase project back to legacy HS256 signing — rejected; newer Supabase projects may not expose that toggle at all, and it's a fragile per-project manual step rather than something the app should require.
+- Use Supabase's server SDK (`supabase.auth.get_user(token)`) to verify instead of decoding locally — rejected; it turns every authenticated request into a network round-trip to Supabase instead of a local, fast JWKS-cached verification, a meaningful latency/availability regression for a check that runs on every request.
+
+**Consequences:** `core/security.py` gains a direct `httpx` dependency (already present transitively via the `supabase` SDK, now pinned directly in `requirements.txt`) and an in-process JWKS cache. `docs/SECURITY.md` §1-2 should be read as "verifies the token using whichever signing scheme the Supabase project actually uses," not HS256 specifically.
+
+---
+
+## ADR-022 (Template for Future Entries)
 
 **Date:**
 **Status:** Proposed | Accepted | Superseded by ADR-XXX

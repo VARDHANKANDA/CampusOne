@@ -1,11 +1,11 @@
 import enum
 import uuid
 
-from sqlalchemy import ARRAY, Boolean, Enum, ForeignKey, Integer, String
+from sqlalchemy import ARRAY, Boolean, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.models.base import Base, UUIDPrimaryKeyMixin
+from app.models.base import Base, UUIDPrimaryKeyMixin, pg_enum
 
 
 class RoomType(str, enum.Enum):
@@ -32,7 +32,7 @@ class Room(UUIDPrimaryKeyMixin, Base):
         UUID(as_uuid=True), ForeignKey("buildings.id", ondelete="RESTRICT"), nullable=False
     )
     name: Mapped[str] = mapped_column(String, nullable=False)
-    type: Mapped[RoomType] = mapped_column(Enum(RoomType, name="room_type"), nullable=False)
+    type: Mapped[RoomType] = mapped_column(pg_enum(RoomType, name="room_type"), nullable=False)
     capacity: Mapped[int] = mapped_column(Integer, nullable=False)
     equipment_tags: Mapped[list[str]] = mapped_column(ARRAY(String), nullable=False, default=list)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)

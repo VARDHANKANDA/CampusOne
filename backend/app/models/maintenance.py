@@ -2,12 +2,12 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, Enum, ForeignKey, Text
+from sqlalchemy import DateTime, ForeignKey, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
-from app.models.base import Base, UUIDPrimaryKeyMixin
+from app.models.base import Base, UUIDPrimaryKeyMixin, pg_enum
 
 
 class MaintenanceSchedule(UUIDPrimaryKeyMixin, Base):
@@ -52,7 +52,7 @@ class MaintenanceRequest(UUIDPrimaryKeyMixin, Base):
         UUID(as_uuid=True), ForeignKey("users.id", ondelete="RESTRICT"), nullable=False
     )
     status: Mapped[MaintenanceRequestStatus] = mapped_column(
-        Enum(MaintenanceRequestStatus, name="maintenance_request_status"),
+        pg_enum(MaintenanceRequestStatus, name="maintenance_request_status"),
         nullable=False,
         default=MaintenanceRequestStatus.PENDING,
     )

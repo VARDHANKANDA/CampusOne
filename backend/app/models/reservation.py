@@ -2,12 +2,12 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Computed, DateTime, Enum, ForeignKey, Integer, Text
+from sqlalchemy import Computed, DateTime, ForeignKey, Integer, Text
 from sqlalchemy.dialects.postgresql import TSTZRANGE, UUID, ExcludeConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
-from app.models.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
+from app.models.base import Base, TimestampMixin, UUIDPrimaryKeyMixin, pg_enum
 
 
 class BookingStatus(str, enum.Enum):
@@ -42,7 +42,9 @@ class Booking(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         Computed("tstzrange(start_time, end_time, '[)')", persisted=True),
     )
     status: Mapped[BookingStatus] = mapped_column(
-        Enum(BookingStatus, name="booking_status"), nullable=False, default=BookingStatus.PENDING
+        pg_enum(BookingStatus, name="booking_status"),
+        nullable=False,
+        default=BookingStatus.PENDING,
     )
     purpose: Mapped[str | None] = mapped_column(Text, nullable=True)
 

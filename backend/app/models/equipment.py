@@ -2,12 +2,12 @@ import enum
 import uuid
 from datetime import date, datetime
 
-from sqlalchemy import Date, DateTime, Enum, ForeignKey, String, Text
+from sqlalchemy import Date, DateTime, ForeignKey, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
-from app.models.base import Base, UUIDPrimaryKeyMixin
+from app.models.base import Base, UUIDPrimaryKeyMixin, pg_enum
 
 
 class EquipmentCategory(str, enum.Enum):
@@ -31,7 +31,7 @@ class Equipment(UUIDPrimaryKeyMixin, Base):
 
     name: Mapped[str] = mapped_column(String, nullable=False)
     category: Mapped[EquipmentCategory] = mapped_column(
-        Enum(EquipmentCategory, name="equipment_category"), nullable=False
+        pg_enum(EquipmentCategory, name="equipment_category"), nullable=False
     )
     building_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True), ForeignKey("buildings.id", ondelete="SET NULL"), nullable=True
@@ -40,7 +40,7 @@ class Equipment(UUIDPrimaryKeyMixin, Base):
     purchase_date: Mapped[date | None] = mapped_column(Date, nullable=True)
     warranty_expiry: Mapped[date | None] = mapped_column(Date, nullable=True)
     status: Mapped[EquipmentStatus] = mapped_column(
-        Enum(EquipmentStatus, name="equipment_status"),
+        pg_enum(EquipmentStatus, name="equipment_status"),
         nullable=False,
         default=EquipmentStatus.AVAILABLE,
     )
@@ -65,7 +65,7 @@ class EquipmentRequest(UUIDPrimaryKeyMixin, Base):
     )
     purpose: Mapped[str | None] = mapped_column(Text, nullable=True)
     status: Mapped[EquipmentRequestStatus] = mapped_column(
-        Enum(EquipmentRequestStatus, name="equipment_request_status"),
+        pg_enum(EquipmentRequestStatus, name="equipment_request_status"),
         nullable=False,
         default=EquipmentRequestStatus.PENDING,
     )
