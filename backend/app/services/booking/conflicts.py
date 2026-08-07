@@ -12,7 +12,7 @@ from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from app.core.errors import ConflictError
@@ -33,6 +33,7 @@ def find_conflict(
     start: datetime,
     end: datetime,
     exclude_booking_id: UUID | None = None,
+    seat_number: int | None = None,
 ) -> ConflictInfo | None:
     maintenance = (
         db.execute(
@@ -60,6 +61,17 @@ def find_conflict(
     )
     if exclude_booking_id is not None:
         query = query.where(Booking.id != exclude_booking_id)
+
+    # Seat collision rules:
+    if seat_number is not None:
+        # A booking for a seat conflicts if another booking is for the whole room (seat_number is null) OR same seat
+        query = query.where(
+            or_(
+                Booking.seat_number.is_(None),
+                Booking.seat_number == seat_number,
+            )
+        )
+    # Booking the whole room conflicts with any booking in that room
 
     conflicting_booking = db.execute(query).scalars().first()
     if conflicting_booking is not None:

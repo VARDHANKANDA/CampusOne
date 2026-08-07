@@ -18,6 +18,11 @@ class ComplaintOut(BaseModel):
     assigned_to: UUID | None
     created_at: datetime
     updated_at: datetime
+    sla_due_at: datetime | None
+    sla_breached: bool
+    escalated_to_admin: bool
+    feedback: str | None = None
+    cost: float | None = None
 
     model_config = {"from_attributes": True}
 

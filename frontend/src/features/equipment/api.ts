@@ -22,8 +22,14 @@ export function useAllEquipment() {
 export function useCreateEquipment() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (input: { name: string; category: EquipmentCategory }) =>
-      (await apiClient.post<Equipment>("/equipment", input)).data,
+    mutationFn: async (input: {
+      name: string;
+      category: EquipmentCategory;
+      building_id?: string | null;
+      department?: string | null;
+      purchase_date?: string | null;
+      warranty_expiry?: string | null;
+    }) => (await apiClient.post<Equipment>("/equipment", input)).data,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["equipment"] });
     },

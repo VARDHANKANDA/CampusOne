@@ -46,6 +46,7 @@ async def update_maintenance_request(
     background_tasks: BackgroundTasks,
     new_status: Literal["pending", "in_progress", "completed"] = Form(..., alias="status"),
     feedback: str | None = Form(None),
+    cost: float | None = Form(None),
     photo: UploadFile | None = File(None),
     db: Session = Depends(get_db),
     current_user: CurrentUser = Depends(require_role(Role.MAINTENANCE_STAFF)),
@@ -61,6 +62,8 @@ async def update_maintenance_request(
     maintenance_request.status = MaintenanceRequestStatus(new_status)
     if feedback is not None:
         maintenance_request.feedback = feedback
+    if cost is not None:
+        maintenance_request.cost = cost
     if photo is not None:
         maintenance_request.completion_photo_url = await upload_image(
             "maintenance-completion-photos", photo, prefix=f"{maintenance_request.id}/"

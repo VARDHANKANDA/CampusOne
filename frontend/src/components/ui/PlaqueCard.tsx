@@ -37,7 +37,7 @@ export function PlaqueCard({
             }
           : undefined
       }
-      className={`relative rounded-plaque border border-slate/15 bg-white p-4 shadow-level-1 before:absolute before:inset-x-0 before:top-0 before:h-[3px] before:rounded-t-plaque before:bg-gradient-to-r before:from-brass before:to-brass-light ${interactive ? "cursor-pointer transition hover:-translate-y-0.5 hover:shadow-level-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass" : ""} ${className}`}
+      className={`relative rounded-plaque border border-card-border bg-card-bg p-4 shadow-level-1 before:absolute before:inset-x-0 before:top-0 before:h-[3px] before:rounded-t-plaque before:bg-gradient-to-r before:from-brass before:to-brass-light ${interactive ? "cursor-pointer transition hover:-translate-y-0.5 hover:shadow-level-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass" : ""} ${className}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div>

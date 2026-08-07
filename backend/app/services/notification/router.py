@@ -60,11 +60,29 @@ def list_notification_settings(
     db: Session = Depends(get_db),
     _current_user: CurrentUser = Depends(require_role(Role.ADMIN)),
 ) -> list[NotificationSetting]:
-    return list(
+    settings = list(
         db.execute(select(NotificationSetting).order_by(NotificationSetting.event_type))
         .scalars()
         .all()
     )
+    if not settings:
+        default_types = [
+            "booking_confirmed",
+            "complaint_status_changed",
+            "maintenance_assigned",
+            "waitlist_slot_opened",
+            "lost_found_match",
+        ]
+        for et in default_types:
+            ns = NotificationSetting(event_type=et, email_enabled=False)
+            db.add(ns)
+        db.commit()
+        settings = list(
+            db.execute(select(NotificationSetting).order_by(NotificationSetting.event_type))
+            .scalars()
+            .all()
+        )
+    return settings
 
 
 @router.patch("/admin/notification-settings/{event_type}", response_model=NotificationSettingOut)

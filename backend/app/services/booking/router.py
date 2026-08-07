@@ -81,6 +81,9 @@ def create_booking(
         end_time=payload.end_time,
         purpose=payload.purpose,
         expected_type=RoomType.CLASSROOM,
+        recurrence_type=payload.recurrence_type,
+        recurrence_end_date=payload.recurrence_end_date,
+        seat_number=payload.seat_number,
     )
 
     background_tasks.add_task(

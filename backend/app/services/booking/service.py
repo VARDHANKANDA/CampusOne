@@ -1,9 +1,4 @@
-"""Shared create-booking logic for Classroom Booking (Module 3) and Lab
-Reservation (Module 4) — both write the same `bookings` table (docs/DECISIONS.md
-ADR-003) through the same validation order (docs/RULES.md §3.3).
-"""
-
-from datetime import datetime
+from datetime import datetime, timedelta
 from uuid import UUID
 
 from sqlalchemy import select
@@ -12,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.core.errors import AppError, ConflictError, NotFoundError
 from app.models.campus import Room, RoomType
-from app.models.reservation import Booking, BookingStatus
+from app.models.reservation import Booking, BookingStatus, RecurrenceType
 from app.services.booking.conflicts import conflict_to_error, find_conflict
 
 
@@ -24,6 +19,9 @@ def create_booking_or_raise(
     end_time: datetime,
     purpose: str | None,
     expected_type: RoomType | None = None,
+    recurrence_type: RecurrenceType = RecurrenceType.NONE,
+    recurrence_end_date: datetime | None = None,
+    seat_number: int | None = None,
 ) -> Booking:
     # Row-level lock serializes concurrent booking attempts on this room for
     # the lifetime of this transaction (docs/RULES.md §3.2); the DB exclusion
@@ -42,17 +40,49 @@ def create_booking_or_raise(
             "ROOM_INACTIVE", "This room is not active and cannot be booked.", status_code=400
         )
 
-    conflict = find_conflict(db, room.id, start_time, end_time)
-    if conflict is not None:
-        raise conflict_to_error(conflict)
+    # 1. Resolve all slots to check
+    slots: list[tuple[datetime, datetime]] = []
+    if recurrence_type != RecurrenceType.NONE and recurrence_end_date is not None:
+        curr_start = start_time
+        curr_end = end_time
+        while curr_start <= recurrence_end_date:
+            slots.append((curr_start, curr_end))
+            if recurrence_type == RecurrenceType.DAILY:
+                curr_start += timedelta(days=1)
+                curr_end += timedelta(days=1)
+            elif recurrence_type == RecurrenceType.WEEKLY:
+                curr_start += timedelta(weeks=1)
+                curr_end += timedelta(weeks=1)
+            else:
+                break
+    else:
+        slots.append((start_time, end_time))
 
+    # 2. Check conflicts for ALL slots in advance
+    for idx, (s_start, s_end) in enumerate(slots):
+        conflict = find_conflict(db, room.id, s_start, s_end, seat_number=seat_number)
+        if conflict is not None:
+            if recurrence_type == RecurrenceType.NONE:
+                raise conflict_to_error(conflict)
+            else:
+                date_str = s_start.strftime("%Y-%m-%d")
+                raise ConflictError(
+                    f"Recurrence slot conflict on {date_str} ({s_start.strftime('%H:%M')} - {s_end.strftime('%H:%M')}).",
+                    details={"conflict_date": date_str, "start": s_start.isoformat(), "end": s_end.isoformat()}
+                )
+
+    # 3. Create parent booking
+    parent_status = BookingStatus.PENDING if room.requires_approval else BookingStatus.CONFIRMED
     booking = Booking(
         room_id=room.id,
         requester_id=requester_id,
-        start_time=start_time,
-        end_time=end_time,
+        start_time=slots[0][0],
+        end_time=slots[0][1],
         purpose=purpose,
-        status=BookingStatus.PENDING if room.requires_approval else BookingStatus.CONFIRMED,
+        status=parent_status,
+        recurrence_type=recurrence_type,
+        recurrence_end_date=recurrence_end_date,
+        seat_number=seat_number,
     )
     db.add(booking)
     try:
@@ -64,4 +94,30 @@ def create_booking_or_raise(
             details={"reason": "booking"},
         ) from exc
     db.refresh(booking)
+
+    # 4. Create child bookings (if recurring)
+    if len(slots) > 1:
+        for s_start, s_end in slots[1:]:
+            child_booking = Booking(
+                room_id=room.id,
+                requester_id=requester_id,
+                start_time=s_start,
+                end_time=s_end,
+                purpose=purpose,
+                status=parent_status,
+                recurrence_type=RecurrenceType.NONE,
+                recurrence_parent_id=booking.id,
+                seat_number=seat_number,
+            )
+            db.add(child_booking)
+        try:
+            db.commit()
+        except IntegrityError as exc:
+            db.rollback()
+            raise ConflictError(
+                "A recurring slot conflict occurred under concurrent edits.",
+                details={"reason": "recurrence_booking"},
+            ) from exc
+
     return booking
+

@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ValidationInfo, field_validator
 
-from app.models.reservation import BookingStatus
+from app.models.reservation import BookingStatus, RecurrenceType
 from app.services.campus.schemas import RoomOut
 
 
@@ -12,6 +12,9 @@ class BookingCreate(BaseModel):
     start_time: datetime
     end_time: datetime
     purpose: str | None = None
+    recurrence_type: RecurrenceType = RecurrenceType.NONE
+    recurrence_end_date: datetime | None = None
+    seat_number: int | None = None
 
     @field_validator("end_time")
     @classmethod
@@ -30,6 +33,11 @@ class BookingOut(BaseModel):
     end_time: datetime
     status: BookingStatus
     purpose: str | None
+    recurrence_type: RecurrenceType
+    recurrence_end_date: datetime | None
+    recurrence_parent_id: UUID | None
+    checked_in_at: datetime | None
+    seat_number: int | None
 
     model_config = {"from_attributes": True}
 
@@ -38,3 +46,4 @@ class AvailabilityResult(BaseModel):
     room: RoomOut
     available: bool
     conflicting_window: tuple[datetime, datetime] | None = None
+

@@ -17,6 +17,12 @@ class BookingStatus(str, enum.Enum):
     REJECTED = "rejected"
 
 
+class RecurrenceType(str, enum.Enum):
+    NONE = "none"
+    DAILY = "daily"
+    WEEKLY = "weekly"
+
+
 class Booking(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     """Classroom/lab booking (docs/DATABASE.md §2.4).
 
@@ -47,6 +53,23 @@ class Booking(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         default=BookingStatus.PENDING,
     )
     purpose: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    # Recurrence support
+    recurrence_type: Mapped[RecurrenceType] = mapped_column(
+        pg_enum(RecurrenceType, name="recurrence_type"),
+        nullable=False,
+        default=RecurrenceType.NONE,
+    )
+    recurrence_end_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    recurrence_parent_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("bookings.id", ondelete="CASCADE"), nullable=True
+    )
+
+    # Check-in tracking
+    checked_in_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    # Lab seat selection
+    seat_number: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
     __table_args__ = (
         ExcludeConstraint(

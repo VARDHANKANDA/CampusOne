@@ -146,6 +146,26 @@ def get_session_records(
     ]
 
 
+@router.patch("/sessions/{session_id}/rotate", response_model=SessionOut)
+def rotate_session_token(
+    session_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: CurrentUser = Depends(require_role(Role.FACULTY)),
+) -> AttendanceSession:
+    session = db.get(AttendanceSession, session_id)
+    if session is None:
+        raise NotFoundError("Attendance session not found")
+    if session.faculty_id != current_user.id:
+        raise ForbiddenError("Only the faculty owner can rotate this session's token.")
+    if session.expires_at <= datetime.now(UTC):
+        raise AppError("SESSION_EXPIRED", "This attendance session has already expired.", status_code=400)
+
+    session.qr_token = secrets.token_urlsafe(32)
+    db.commit()
+    db.refresh(session)
+    return session
+
+
 @router.get("/reports", response_model=list[SessionReportOut])
 def attendance_reports(
     course_code: str | None = Query(default=None),

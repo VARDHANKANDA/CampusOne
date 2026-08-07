@@ -5,6 +5,7 @@ import { ModulePlaceholder } from "@/components/layout/ModulePlaceholder";
 import { AuthProvider } from "@/core/auth/AuthContext";
 import { RequireAuth } from "@/core/auth/RequireAuth";
 import { RequireRole } from "@/core/auth/RequireRole";
+import { ThemeProvider } from "@/core/theme/ThemeContext";
 import { AdminBookingsPage } from "@/features/admin/AdminBookingsPage";
 import { AdminEquipmentPage } from "@/features/admin/AdminEquipmentPage";
 import { AdminRoomsPage } from "@/features/admin/AdminRoomsPage";
@@ -25,6 +26,7 @@ import { MyComplaintsPage } from "@/features/complaint/MyComplaintsPage";
 import { SubmitComplaintPage } from "@/features/complaint/SubmitComplaintPage";
 import { DashboardPage } from "@/features/dashboard/DashboardPage";
 import { EquipmentRequestsPage } from "@/features/equipment/EquipmentRequestsPage";
+import { EventCalendarPage } from "@/features/event/EventCalendarPage";
 import { ScheduleEventPage } from "@/features/event/ScheduleEventPage";
 import { LostFoundPage } from "@/features/lostfound/LostFoundPage";
 import { MyTasksPage } from "@/features/maintenance/MyTasksPage";
@@ -50,6 +52,7 @@ const IMPLEMENTED_PATHS = new Set([
   "/attendance/scan",
   "/attendance/generate",
   "/attendance/reports",
+  "/events",
   "/events/new",
   "/notifications",
   "/admin/notification-settings",
@@ -74,8 +77,10 @@ const placeholderRoutes = Array.from(
 
 export function App(): React.JSX.Element {
   return (
-    <AuthProvider>
-      <Routes>
+    <ThemeProvider>
+      <AuthProvider>
+        <Routes>
+
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -95,6 +100,14 @@ export function App(): React.JSX.Element {
             element={
               <AppShell>
                 <LostFoundPage />
+              </AppShell>
+            }
+          />
+          <Route
+            path="/events"
+            element={
+              <AppShell>
+                <EventCalendarPage />
               </AppShell>
             }
           />
@@ -331,6 +344,7 @@ export function App(): React.JSX.Element {
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </AuthProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

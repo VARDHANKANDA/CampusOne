@@ -16,5 +16,6 @@ class MaintenanceRequestOut(BaseModel):
     actual_completion: datetime | None
     completion_photo_url: str | None
     feedback: str | None
+    cost: float | None
 
     model_config = {"from_attributes": True}

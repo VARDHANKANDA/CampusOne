@@ -2,10 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/* docs/UI_UX.md §3.1 — the full and only palette, exposed as CSS custom
-   properties for the rare case a component needs a raw value instead of a
-   Tailwind utility (e.g. Chart.js series colors). */
+/* docs/UI_UX.md §3.1 — token palette with dark-mode overrides */
 :root {
+  --bg-canvas: #f6f4ef;
+  --text-primary: #1b2a4a;
+  --text-secondary: #64748b;
+  --card-bg: #ffffff;
+  --card-border: rgba(100, 116, 139, 0.15);
+
   --ink-navy: #1b2a4a;
   --brass: #b8863e;
   --brass-light: #d9b876;
@@ -15,8 +19,24 @@
   --slate: #64748b;
 }
 
+.dark {
+  --bg-canvas: #090e18;
+  --text-primary: #f6f4ef;
+  --text-secondary: #94a3b8;
+  --card-bg: #111a2e;
+  --card-border: rgba(148, 163, 184, 0.15);
+
+  --ink-navy: #f6f4ef;
+  --brass: #d9b876;
+  --brass-light: #f3dca2;
+  --quad-green: #4ade80;
+  --brick: #f87171;
+  --chalk: #090e18;
+  --slate: #94a3b8;
+}
+
 body {
-  @apply bg-chalk text-ink-navy font-body antialiased;
+  @apply bg-[var(--bg-canvas)] text-[var(--text-primary)] font-body antialiased transition-colors duration-200;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -28,3 +48,4 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+

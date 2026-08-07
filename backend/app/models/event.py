@@ -2,9 +2,10 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Computed, DateTime, ForeignKey, String
+from sqlalchemy import Computed, DateTime, ForeignKey, String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import TSTZRANGE, UUID, ExcludeConstraint
 from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.sql import func
 
 from app.models.base import Base, UUIDPrimaryKeyMixin, pg_enum
 
@@ -45,3 +46,22 @@ class Event(UUIDPrimaryKeyMixin, Base):
             using="gist",
         ),
     )
+
+
+class EventRSVP(UUIDPrimaryKeyMixin, Base):
+    __tablename__ = "event_rsvps"
+
+    event_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("events.id", ondelete="CASCADE"), nullable=False
+    )
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+    __table_args__ = (
+        UniqueConstraint("event_id", "user_id", name="uq_event_user_rsvp"),
+    )
+

@@ -36,3 +36,10 @@ export function useAttendanceReports() {
     queryFn: async () => (await apiClient.get<SessionReport[]>("/attendance/reports")).data,
   });
 }
+
+export function useRotateSession() {
+  return useMutation({
+    mutationFn: async (sessionId: string) =>
+      (await apiClient.patch<AttendanceSession>(`/attendance/sessions/${sessionId}/rotate`)).data,
+  });
+}

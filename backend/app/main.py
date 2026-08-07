@@ -42,6 +42,7 @@ from app.services.event.router import router as event_router  # noqa: E402
 from app.services.lost_found.router import router as lost_found_router  # noqa: E402
 from app.services.maintenance.router import router as maintenance_router  # noqa: E402
 from app.services.notification.router import router as notification_router  # noqa: E402
+from app.services.search.router import router as search_router  # noqa: E402
 from app.services.users.router import router as users_router  # noqa: E402
 
 app.include_router(auth_router, prefix="/api/v1")
@@ -56,5 +57,6 @@ app.include_router(lost_found_router, prefix="/api/v1")
 app.include_router(attendance_router, prefix="/api/v1")
 app.include_router(event_router, prefix="/api/v1")
 app.include_router(notification_router, prefix="/api/v1")
+app.include_router(search_router, prefix="/api/v1")
 app.include_router(analytics_router, prefix="/api/v1")
 app.include_router(audit_router, prefix="/api/v1")

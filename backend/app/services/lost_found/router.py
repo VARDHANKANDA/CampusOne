@@ -15,7 +15,32 @@ from app.models.user import Role
 from app.services.audit.service import record_audit_log
 from app.services.lost_found.schemas import LostFoundOut, LostFoundStatusUpdate
 
+from app.services.notification.service import queue_notification
+
 router = APIRouter(prefix="/lost-found", tags=["lost-found"])
+
+
+def check_lost_found_similarity(db: Session, new_item: LostFoundItem) -> list[LostFoundItem]:
+    words = [w.strip(".,!?()\"'").lower() for w in new_item.description.split()]
+    keywords = [w for w in words if len(w) > 3]
+    if not keywords:
+        return []
+
+    opposite_type = LostFoundType.FOUND if new_item.type == LostFoundType.LOST else LostFoundType.LOST
+    query = select(LostFoundItem).where(
+        LostFoundItem.type == opposite_type,
+        LostFoundItem.status == LostFoundStatus.OPEN,
+        LostFoundItem.id != new_item.id,
+    )
+    all_opposites = db.execute(query).scalars().all()
+
+    matches = []
+    for item in all_opposites:
+        desc_words = [w.strip(".,!?()\"'").lower() for w in item.description.split()]
+        overlap = set(keywords).intersection(desc_words)
+        if len(overlap) >= 2 or (len(overlap) >= 1 and len(desc_words) <= 5):
+            matches.append(item)
+    return matches
 
 
 @router.post("", response_model=LostFoundOut, status_code=status.HTTP_201_CREATED)
@@ -41,6 +66,30 @@ async def report_item(
     db.add(item)
     db.commit()
     db.refresh(item)
+
+    # Trigger similarity checks and notify if match found
+    matches = check_lost_found_similarity(db, item)
+    for match in matches:
+        background_tasks.add_task(
+            queue_notification,
+            item.reporter_id,
+            "lost_found_match",
+            {
+                "item_id": str(item.id),
+                "matched_item_id": str(match.id),
+                "message": f"Potential match found for your reported item: {match.description[:40]}...",
+            },
+        )
+        background_tasks.add_task(
+            queue_notification,
+            match.reporter_id,
+            "lost_found_match",
+            {
+                "item_id": str(match.id),
+                "matched_item_id": str(item.id),
+                "message": f"Potential match found for your reported item: {item.description[:40]}...",
+            },
+        )
 
     background_tasks.add_task(
         record_audit_log,

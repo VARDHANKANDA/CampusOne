@@ -14,6 +14,11 @@ export interface Complaint {
   assigned_to: string | null;
   created_at: string;
   updated_at: string;
+  sla_due_at: string | null;
+  sla_breached: boolean;
+  escalated_to_admin: boolean;
+  feedback: string | null;
+  cost: number | null;
 }
 
 export interface MaintenanceStaffUser {

@@ -20,3 +20,12 @@ class UserUpdate(BaseModel):
     role: Role | None = None
     department: str | None = None
     is_active: bool | None = None
+
+
+class UserCreate(BaseModel):
+    email: str
+    password: str
+    full_name: str
+    role: Role = Role.STUDENT
+    department: str | None = None
+

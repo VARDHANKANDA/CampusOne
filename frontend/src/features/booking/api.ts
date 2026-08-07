@@ -32,6 +32,9 @@ interface CreateBookingInput {
   start_time: string;
   end_time: string;
   purpose?: string;
+  recurrence_type?: "none" | "daily" | "weekly";
+  recurrence_end_date?: string | null;
+  seat_number?: number | null;
 }
 
 export function useCreateBooking() {
@@ -85,3 +88,13 @@ export function useRejectBooking() {
     },
   });
 }
+
+export function useRoomBookings(roomId: string | null) {
+  return useQuery({
+    queryKey: ["bookings", "room", roomId],
+    queryFn: async () =>
+      (await apiClient.get<Booking[]>("/bookings", { params: { room_id: roomId } })).data,
+    enabled: roomId !== null,
+  });
+}
+

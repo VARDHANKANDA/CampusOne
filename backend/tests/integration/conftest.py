@@ -64,11 +64,25 @@ def fake_supabase(monkeypatch) -> FakeSupabaseClient:
 
 @pytest.fixture
 def client(
-    db_session: Session, fake_supabase: FakeSupabaseClient
+    db_session: Session, fake_supabase: FakeSupabaseClient, monkeypatch
 ) -> Generator[TestClient, None, None]:
     def _get_db_override() -> Generator[Session, None, None]:
         yield db_session
 
     app.dependency_overrides[get_db] = _get_db_override
+
+    # Prevent commits on the main db_session to avoid closing connection transaction
+    monkeypatch.setattr(db_session, "commit", db_session.flush)
+
+    def mock_session_local() -> Session:
+        conn = db_session.connection()
+        s = Session(bind=conn)
+        s.commit = s.flush
+        return s
+
+    monkeypatch.setattr("app.services.audit.service.SessionLocal", mock_session_local)
+    monkeypatch.setattr("app.services.notification.service.SessionLocal", mock_session_local)
+
     yield TestClient(app)
     app.dependency_overrides.clear()
+

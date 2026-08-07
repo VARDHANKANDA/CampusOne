@@ -64,6 +64,7 @@ class MaintenanceRequest(UUIDPrimaryKeyMixin, Base):
     )
     completion_photo_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     feedback: Mapped[str | None] = mapped_column(Text, nullable=True)
+    cost: Mapped[float | None] = mapped_column(nullable=True)
     # Added for FR-12.1's maintenance-performance metric (time to resolution),
     # which is otherwise uncomputable — docs/DECISIONS.md ADR-019.
     created_at: Mapped[datetime] = mapped_column(

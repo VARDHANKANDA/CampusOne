@@ -6,7 +6,7 @@ from app.models.audit import AuditLog
 from app.models.campus import Building, Room
 from app.models.complaint import Complaint
 from app.models.equipment import Equipment, EquipmentRequest
-from app.models.event import Event
+from app.models.event import Event, EventRSVP
 from app.models.lost_found import LostFoundItem
 from app.models.maintenance import MaintenanceRequest, MaintenanceSchedule
 from app.models.notification import Notification, NotificationSetting
@@ -24,6 +24,7 @@ __all__ = [
     "Equipment",
     "EquipmentRequest",
     "Event",
+    "EventRSVP",
     "LostFoundItem",
     "MaintenanceRequest",
     "MaintenanceSchedule",

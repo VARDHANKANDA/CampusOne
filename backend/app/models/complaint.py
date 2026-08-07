@@ -1,7 +1,8 @@
 import enum
 import uuid
+from datetime import datetime
 
-from sqlalchemy import ForeignKey, Text
+from sqlalchemy import DateTime, ForeignKey, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -67,3 +68,9 @@ class Complaint(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     assigned_to: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )
+
+    # SLA and Escalation tracking
+    sla_due_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    sla_breached: Mapped[bool] = mapped_column(nullable=False, default=False)
+    escalated_to_admin: Mapped[bool] = mapped_column(nullable=False, default=False)
+

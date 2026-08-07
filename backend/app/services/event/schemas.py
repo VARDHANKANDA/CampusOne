@@ -31,3 +31,18 @@ class EventOut(BaseModel):
     status: EventStatus
 
     model_config = {"from_attributes": True}
+
+
+class AttendeeOut(BaseModel):
+    id: UUID
+    full_name: str
+    email: str
+    department: str | None = None
+
+    model_config = {"from_attributes": True}
+
+
+class EventRSVPStatusOut(BaseModel):
+    rsvp_count: int
+    user_rsvped: bool
+

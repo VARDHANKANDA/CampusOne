@@ -17,6 +17,7 @@ interface ReserveLabInput {
   room_id: string;
   start_time: string;
   end_time: string;
+  seat_number?: number | null;
 }
 
 export function useReserveLab() {
@@ -46,3 +47,21 @@ export function useJoinWaitlist() {
       (await apiClient.post<WaitlistEntry>("/labs/waitlist", input)).data,
   });
 }
+
+export function useOccupiedSeats(
+  roomId: string | null,
+  start_time: string | null,
+  end_time: string | null
+) {
+  return useQuery({
+    queryKey: ["labs", roomId, "occupied-seats", start_time, end_time],
+    queryFn: async () =>
+      (
+        await apiClient.get<number[]>(`/labs/${roomId}/occupied-seats`, {
+          params: { start_time, end_time },
+        })
+      ).data,
+    enabled: roomId !== null && start_time !== null && end_time !== null,
+  });
+}
+

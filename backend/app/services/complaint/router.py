@@ -5,6 +5,7 @@ every transition is checked against VALID_COMPLAINT_TRANSITIONS before the
 write — invalid transitions 400, never silently succeed or no-op.
 """
 
+from datetime import datetime, timedelta, UTC
 from typing import Literal
 from uuid import UUID
 
@@ -53,6 +54,16 @@ async def submit_complaint(
 ) -> Complaint:
     image_url = await upload_image("complaint-images", image, prefix=f"{current_user.id}/")
 
+    now = datetime.now(UTC)
+    sla_hours = {
+        ComplaintPriority.URGENT: 4,
+        ComplaintPriority.HIGH: 24,
+        ComplaintPriority.MEDIUM: 72,
+        ComplaintPriority.LOW: 168,
+    }
+    hours = sla_hours.get(priority, 72)
+    sla_due_at = now + timedelta(hours=hours)
+
     complaint = Complaint(
         reporter_id=current_user.id,
         category=category,
@@ -60,6 +71,7 @@ async def submit_complaint(
         priority=priority,
         image_url=image_url,
         status=ComplaintStatus.SUBMITTED,
+        sla_due_at=sla_due_at,
     )
     db.add(complaint)
     db.commit()
@@ -76,6 +88,45 @@ async def submit_complaint(
     return complaint
 
 
+def _update_complaint_sla(db: Session, complaint: Complaint) -> None:
+    if (
+        complaint.sla_due_at
+        and complaint.status not in (ComplaintStatus.COMPLETED, ComplaintStatus.VERIFIED)
+    ):
+        now = datetime.now(UTC)
+        if now > complaint.sla_due_at:
+            if not complaint.sla_breached or not complaint.escalated_to_admin:
+                complaint.sla_breached = True
+                complaint.escalated_to_admin = True
+                db.commit()
+
+
+def _format_complaint_out(db: Session, complaint: Complaint) -> dict:
+    from app.models.maintenance import MaintenanceRequest
+    req = db.execute(
+        select(MaintenanceRequest).where(MaintenanceRequest.complaint_id == complaint.id)
+    ).scalars().first()
+    
+    return {
+        "id": complaint.id,
+        "reporter_id": complaint.reporter_id,
+        "category": complaint.category,
+        "description": complaint.description,
+        "image_url": complaint.image_url,
+        "completion_image_url": complaint.completion_image_url,
+        "priority": complaint.priority,
+        "status": complaint.status,
+        "assigned_to": complaint.assigned_to,
+        "created_at": complaint.created_at,
+        "updated_at": complaint.updated_at,
+        "sla_due_at": complaint.sla_due_at,
+        "sla_breached": complaint.sla_breached,
+        "escalated_to_admin": complaint.escalated_to_admin,
+        "feedback": req.feedback if req else None,
+        "cost": req.cost if req else None,
+    }
+
+
 @router.get("", response_model=list[ComplaintOut])
 def list_complaints(
     status_filter: ComplaintStatus | None = None,
@@ -85,7 +136,7 @@ def list_complaints(
     current_user: CurrentUser = Depends(
         require_role(Role.STUDENT, Role.WARDEN, Role.ADMIN, Role.MAINTENANCE_STAFF)
     ),
-) -> list[Complaint]:
+) -> list[dict]:
     query = select(Complaint)
     if current_user.role == Role.STUDENT:
         query = query.where(Complaint.reporter_id == current_user.id)
@@ -97,13 +148,19 @@ def list_complaints(
         query = query.where(Complaint.category == category)
     if priority is not None:
         query = query.where(Complaint.priority == priority)
-    return list(db.execute(query.order_by(Complaint.created_at.desc())).scalars().all())
+    
+    complaints = list(db.execute(query.order_by(Complaint.created_at.desc())).scalars().all())
+    for c in complaints:
+        _update_complaint_sla(db, c)
+    return [_format_complaint_out(db, c) for c in complaints]
 
 
 def _get_visible_complaint(db: Session, complaint_id: UUID, current_user: CurrentUser) -> Complaint:
     complaint = db.get(Complaint, complaint_id)
     if complaint is None:
         raise NotFoundError("Complaint not found")
+    _update_complaint_sla(db, complaint)
+    
     is_visible = (
         current_user.role in (Role.WARDEN, Role.ADMIN)
         or complaint.reporter_id == current_user.id
@@ -119,8 +176,9 @@ def get_complaint(
     complaint_id: UUID,
     db: Session = Depends(get_db),
     current_user: CurrentUser = Depends(get_current_user),
-) -> Complaint:
-    return _get_visible_complaint(db, complaint_id, current_user)
+) -> dict:
+    complaint = _get_visible_complaint(db, complaint_id, current_user)
+    return _format_complaint_out(db, complaint)
 
 
 @router.patch("/{complaint_id}/assign", response_model=ComplaintOut)
@@ -130,7 +188,7 @@ def assign_complaint(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     current_user: CurrentUser = Depends(require_role(Role.WARDEN)),
-) -> Complaint:
+) -> dict:
     complaint = db.get(Complaint, complaint_id)
     if complaint is None:
         raise NotFoundError("Complaint not found")
@@ -183,7 +241,7 @@ def assign_complaint(
         "maintenance_assigned",
         {"complaint_id": str(complaint.id)},
     )
-    return complaint
+    return _format_complaint_out(db, complaint)
 
 
 @router.patch("/{complaint_id}/status", response_model=ComplaintOut)
@@ -194,7 +252,7 @@ async def update_complaint_status(
     photo: UploadFile | None = File(None),
     db: Session = Depends(get_db),
     current_user: CurrentUser = Depends(require_role(Role.MAINTENANCE_STAFF)),
-) -> Complaint:
+) -> dict:
     complaint = db.get(Complaint, complaint_id)
     if complaint is None:
         raise NotFoundError("Complaint not found")
@@ -228,7 +286,7 @@ async def update_complaint_status(
         "complaint_status_changed",
         {"complaint_id": str(complaint.id), "status": complaint.status.value},
     )
-    return complaint
+    return _format_complaint_out(db, complaint)
 
 
 @router.patch("/{complaint_id}/verify", response_model=ComplaintOut)
@@ -237,7 +295,7 @@ def verify_complaint(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     current_user: CurrentUser = Depends(require_role(Role.STUDENT)),
-) -> Complaint:
+) -> dict:
     complaint = db.get(Complaint, complaint_id)
     if complaint is None:
         raise NotFoundError("Complaint not found")
@@ -259,4 +317,4 @@ def verify_complaint(
         before_state=before,
         after_state=ComplaintOut.model_validate(complaint).model_dump(mode="json"),
     )
-    return complaint
+    return _format_complaint_out(db, complaint)

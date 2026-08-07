@@ -119,3 +119,67 @@ def deactivate_user(
         after_state=UserOut.model_validate(user).model_dump(mode="json"),
     )
     return user
+
+
+import logging
+from app.core.errors import AppError
+from app.core.supabase import get_supabase_client
+from app.services.users.schemas import UserCreate
+
+logger = logging.getLogger(__name__)
+
+
+@router.post("", response_model=UserOut, status_code=201)
+def create_user(
+    payload: UserCreate,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+    current_user: CurrentUser = Depends(require_role(Role.ADMIN)),
+) -> User:
+    supabase = get_supabase_client()
+    try:
+        auth_response = supabase.auth.admin.create_user(
+            {
+                "email": payload.email,
+                "password": payload.password,
+                "email_confirm": True,
+            }
+        )
+    except Exception as exc:
+        logger.exception("Supabase admin user creation failed for %s", payload.email)
+        raise AppError(
+            code="USER_CREATION_FAILED",
+            message="Could not create user account in auth system.",
+            status_code=400,
+        ) from exc
+
+    auth_user_id = auth_response.user.id
+    user = User(
+        id=auth_user_id,
+        email=payload.email,
+        full_name=payload.full_name,
+        role=payload.role,
+        department=payload.department,
+    )
+    db.add(user)
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        try:
+            supabase.auth.admin.delete_user(auth_user_id)
+        except Exception:
+            logger.exception("Failed to roll back orphaned Supabase auth user %s", auth_user_id)
+        raise
+    db.refresh(user)
+
+    background_tasks.add_task(
+        record_audit_log,
+        current_user.id,
+        "user.created",
+        "user",
+        user.id,
+        after_state=UserOut.model_validate(user).model_dump(mode="json"),
+    )
+    return user
+

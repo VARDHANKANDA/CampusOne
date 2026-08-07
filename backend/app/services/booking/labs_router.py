@@ -77,6 +77,9 @@ def reserve_lab(
         end_time=payload.end_time,
         purpose=payload.purpose,
         expected_type=RoomType.LAB,
+        recurrence_type=payload.recurrence_type,
+        recurrence_end_date=payload.recurrence_end_date,
+        seat_number=payload.seat_number,
     )
 
     background_tasks.add_task(
@@ -142,3 +145,24 @@ def view_waitlist(
         .order_by(WaitlistEntry.position)
     )
     return list(db.execute(query).scalars().all())
+
+
+@router.get("/{room_id}/occupied-seats", response_model=list[int])
+def get_occupied_seats(
+    room_id: UUID,
+    start_time: datetime,
+    end_time: datetime,
+    db: Session = Depends(get_db),
+    _current_user: CurrentUser = Depends(require_role(*LAB_ROLES)),
+) -> list[int]:
+    if end_time <= start_time:
+        raise AppError("INVALID_WINDOW", "end_time must be after start_time")
+    query = select(Booking.seat_number).where(
+        Booking.room_id == room_id,
+        Booking.status == BookingStatus.CONFIRMED,
+        Booking.seat_number.is_not(None),
+        Booking.start_time < end_time,
+        Booking.end_time > start_time,
+    )
+    return list(db.execute(query).scalars().all())
+

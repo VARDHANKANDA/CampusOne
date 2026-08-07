@@ -52,3 +52,23 @@ export function useDeactivateUser() {
     },
   });
 }
+
+interface CreateUserInput {
+  email: string;
+  password?: string;
+  full_name: string;
+  role: Role;
+  department?: string | null;
+}
+
+export function useCreateUser() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: CreateUserInput) =>
+      (await apiClient.post<AdminUser>("/users", input)).data,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+    },
+  });
+}
+

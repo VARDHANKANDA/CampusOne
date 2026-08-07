@@ -1,19 +1,24 @@
 import type { Config } from "tailwindcss";
 
-// Token values mirror docs/UI_UX.md §3.1 — the full and only palette.
-// Every color used anywhere in the product maps to one of these tokens.
 export default {
+  darkMode: "class",
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        "ink-navy": "#1B2A4A",
-        brass: "#B8863E",
-        "brass-light": "#D9B876",
-        "quad-green": "#3F6B4F",
-        brick: "#A8412C",
-        chalk: "#F6F4EF",
-        slate: "#64748B",
+        "ink-navy": "var(--ink-navy)",
+        brass: "var(--brass)",
+        "brass-light": "var(--brass-light)",
+        "quad-green": "var(--quad-green)",
+        brick: "var(--brick)",
+        chalk: "var(--chalk)",
+        slate: "var(--slate)",
+        // Semantic color shortcuts
+        canvas: "var(--bg-canvas)",
+        "text-primary": "var(--text-primary)",
+        "text-secondary": "var(--text-secondary)",
+        "card-bg": "var(--card-bg)",
+        "card-border": "var(--card-border)",
       },
       fontFamily: {
         display: ["Fraunces", "Georgia", "serif"],
@@ -33,3 +38,4 @@ export default {
   },
   plugins: [],
 } satisfies Config;
+
