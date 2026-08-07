@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { TextField } from "@/components/ui/TextField";
+import { ApiError } from "@/core/api/types";
 import type { Role } from "@/core/auth/types";
 import { useAllUsers, useDeactivateUser, useUpdateUser, useCreateUser } from "@/features/admin/usersApi";
 import { exportToCSV } from "@/utils/export";
@@ -46,8 +47,10 @@ export function AdminUsersPage(): React.JSX.Element {
           setNewRole("student");
           setNewDept("");
         },
-        onError: (err: any) => {
-          setCreateError(err?.message || "Failed to create user. Please verify input fields.");
+        onError: (err: unknown) => {
+          setCreateError(
+            err instanceof ApiError ? err.message : "Failed to create user. Please verify input fields."
+          );
         },
       }
     );

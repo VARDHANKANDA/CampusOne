@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { NavLink, useLocation, Link } from "react-router-dom";
 
 import { useAuth } from "@/core/auth/useAuth";
-import { useTheme } from "@/core/theme/ThemeContext";
+import { useTheme } from "@/core/theme/useTheme";
 import { NotificationBell } from "@/features/notification/NotificationBell";
 import { CommandPalette } from "@/components/ui/CommandPalette";
 import { NAV_BY_ROLE, ROLE_LABEL } from "@/routes/navigation";
@@ -106,7 +106,7 @@ export function AppShell({ children }: { children: ReactNode }): React.JSX.Eleme
           {/* Breadcrumbs Wayfinding */}
           <nav className="flex items-center gap-1.5 text-xs text-slate" aria-label="Breadcrumb">
             <Link to="/" className="hover:text-brass transition">Home</Link>
-            {breadcrumbs.map((bc, idx) => (
+            {breadcrumbs.map((bc) => (
               <span key={bc.url} className="flex items-center gap-1.5">
                 <span>/</span>
                 {bc.isLast ? (

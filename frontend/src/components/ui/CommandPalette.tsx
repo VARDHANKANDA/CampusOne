@@ -1,8 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/core/auth/useAuth";
-import { useTheme } from "@/core/theme/ThemeContext";
-import { client } from "@/core/api/client";
+import { useTheme } from "@/core/theme/useTheme";
+import { apiClient } from "@/core/api/client";
 import { ROLE_LABEL } from "@/routes/navigation";
 
 interface SearchResultItem {
@@ -53,7 +53,7 @@ export function CommandPalette(): React.JSX.Element {
     const delayDebounce = setTimeout(async () => {
       setLoading(true);
       try {
-        const response = await client.get<SearchResultItem[]>(`/search?q=${encodeURIComponent(query)}`);
+        const response = await apiClient.get<SearchResultItem[]>(`/search?q=${encodeURIComponent(query)}`);
         setResults(response.data);
       } catch (err) {
         console.error("Search failed", err);

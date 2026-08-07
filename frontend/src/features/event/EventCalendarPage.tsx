@@ -11,7 +11,6 @@ import {
   useAttendees,
 } from "@/features/event/api";
 import { useRooms } from "@/features/campus/api";
-import type { CampusEvent } from "@/features/event/types";
 
 export function EventCalendarPage(): React.JSX.Element {
   const { user } = useAuth();

@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/Button";
@@ -46,7 +45,6 @@ const schema = z
 type FormValues = z.infer<typeof schema>;
 
 export function NewBookingPage(): React.JSX.Element {
-  const navigate = useNavigate();
   const { data: buildings } = useBuildings();
   const [searchParams, setSearchParams] = useState<AvailabilityParams | null>(null);
   const [bookingError, setBookingError] = useState<string | null>(null);

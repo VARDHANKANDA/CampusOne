@@ -20,15 +20,17 @@ export function DashboardPage(): React.JSX.Element {
   const approveBooking = useApproveBooking();
   const rejectBooking = useRejectBooking();
 
-  if (!user) return <></>;
-
-  // 1. Role-specific query hooks loading real database data
+  // 1. Role-specific query hooks loading real database data — always called
+  // unconditionally (Rules of Hooks) even though only one role's data is
+  // ever rendered; the early `!user` return below must come after these.
   const studentComplaints = useMyComplaints();
   const facultyBookings = useMyBookings();
   const wardenQueue = useComplaintQueue("submitted");
   const technicianTasks = useMyMaintenanceTasks();
   const adminPendingBookings = usePendingBookings();
   const allEquipment = useAllEquipment();
+
+  if (!user) return <></>;
 
   // Loading States
   const isLoading =

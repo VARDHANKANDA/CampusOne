@@ -2,7 +2,7 @@
  * Utility helper to export an array of records to a CSV spreadsheet file
  * directly within the client browser.
  */
-export function exportToCSV<T extends Record<string, any>>(
+export function exportToCSV<T extends Record<string, unknown>>(
   data: T[],
   filename: string,
   headers?: string[]

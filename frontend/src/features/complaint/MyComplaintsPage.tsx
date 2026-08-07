@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 import { Button } from "@/components/ui/Button";
-import { PlaqueCard } from "@/components/ui/PlaqueCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { useMyComplaints, useVerifyComplaint } from "@/features/complaint/api";
 import { COMPLAINT_STATUS_TONE } from "@/features/complaint/statusTone";
