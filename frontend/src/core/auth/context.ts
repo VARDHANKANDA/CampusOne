@@ -9,6 +9,10 @@ export interface AuthContextValue {
   status: AuthStatus;
   login: (email: string, password: string) => Promise<void>;
   register: (input: RegisterInput) => Promise<void>;
+  /** Finishes a Google/Microsoft/Facebook/Apple sign-in: stores the Supabase
+   * session token already established by the OAuth redirect, then syncs/creates
+   * our own `users` row for it (see AuthCallbackPage). */
+  completeOAuthLogin: (accessToken: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 

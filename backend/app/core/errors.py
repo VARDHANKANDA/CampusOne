@@ -5,6 +5,7 @@ errors) is only ever logged server-side, never returned (docs/SECURITY.md §9).
 """
 
 import logging
+from collections.abc import Sequence
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request, status
@@ -65,6 +66,22 @@ def _error_body(code: str, message: str, details: dict[str, Any] | None = None) 
     return {"error": {"code": code, "message": message, "details": details or {}}}
 
 
+def _sanitize_pydantic_errors(errors: Sequence[Any]) -> list[dict[str, Any]]:
+    """Pydantic embeds the raw exception instance in `ctx.error` for any custom
+    `field_validator` that raises `ValueError` (unlike built-in validators like
+    `min_length`, whose `ctx` is already plain data) — that's not JSON
+    serializable as-is, so it's stringified before this ever reaches JSONResponse.
+    """
+    sanitized: list[dict[str, Any]] = []
+    for err in errors:
+        err = dict(err)
+        ctx = err.get("ctx")
+        if isinstance(ctx, dict) and isinstance(ctx.get("error"), BaseException):
+            err = {**err, "ctx": {**ctx, "error": str(ctx["error"])}}
+        sanitized.append(err)
+    return sanitized
+
+
 def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(AppError)
     async def handle_app_error(_request: Request, exc: AppError) -> JSONResponse:
@@ -82,7 +99,7 @@ def register_exception_handlers(app: FastAPI) -> None:
             content=_error_body(
                 "VALIDATION_ERROR",
                 "One or more fields failed validation.",
-                {"fields": exc.errors()},
+                {"fields": _sanitize_pydantic_errors(exc.errors())},
             ),
         )
 

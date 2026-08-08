@@ -4,6 +4,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { ModulePlaceholder } from "@/components/layout/ModulePlaceholder";
 import { AuthProvider } from "@/core/auth/AuthContext";
 import { RequireAuth } from "@/core/auth/RequireAuth";
+import { RequireGuest } from "@/core/auth/RequireGuest";
 import { RequireRole } from "@/core/auth/RequireRole";
 import { ThemeProvider } from "@/core/theme/ThemeContext";
 import { AdminBookingsPage } from "@/features/admin/AdminBookingsPage";
@@ -15,7 +16,9 @@ import { AttendanceReportsPage } from "@/features/attendance/AttendanceReportsPa
 import { GenerateAttendancePage } from "@/features/attendance/GenerateAttendancePage";
 import { ScanAttendancePage } from "@/features/attendance/ScanAttendancePage";
 import { AuditLogsPage } from "@/features/audit/AuditLogsPage";
+import { AuthCallbackPage } from "@/features/auth/AuthCallbackPage";
 import { ForgotPasswordPage } from "@/features/auth/ForgotPasswordPage";
+import { LandingPage } from "@/features/auth/LandingPage";
 import { LoginPage } from "@/features/auth/LoginPage";
 import { RegisterPage } from "@/features/auth/RegisterPage";
 import { MyBookingsPage } from "@/features/booking/MyBookingsPage";
@@ -81,9 +84,13 @@ export function App(): React.JSX.Element {
       <AuthProvider>
         <Routes>
 
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/auth/callback" element={<AuthCallbackPage />} />
+        <Route element={<RequireGuest />}>
+          <Route path="/welcome" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        </Route>
         <Route element={<RequireAuth />}>
           <Route
             path="/"

@@ -5,18 +5,26 @@ import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/Button";
+import { PasswordStrengthMeter } from "@/components/ui/PasswordStrengthMeter";
 import { TextField } from "@/components/ui/TextField";
 import { useAuth } from "@/core/auth/useAuth";
 import { ApiError } from "@/core/api/types";
+import { passwordMeetsAllRules } from "@/core/validation/password";
 import { AuthLayout } from "@/features/auth/AuthLayout";
+import { OAuthButtons } from "@/features/auth/OAuthButtons";
 
-// Mirrors the backend Pydantic RegisterRequest shape (docs/RULES.md §4.1).
-// No role field: self-registration always creates a student account
-// (docs/DECISIONS.md ADR-010) — every other role is admin-provisioned.
+// Mirrors the backend Pydantic RegisterRequest shape and password validator
+// exactly (backend/app/services/auth/schemas.py) — no role field, since
+// self-registration always creates a student account (ADR-010); every other
+// role is admin-provisioned.
 const schema = z.object({
   full_name: z.string().min(1, "Full name is required").max(200),
   email: z.string().min(1, "Email is required").email("Enter a valid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .max(72, "Password must be at most 72 characters")
+    .refine(passwordMeetsAllRules, "Password doesn't meet all the requirements below"),
   department: z.string().optional(),
 });
 
@@ -30,8 +38,11 @@ export function RegisterPage(): React.JSX.Element {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
+
+  const passwordValue = watch("password") ?? "";
 
   const onSubmit = async (values: FormValues): Promise<void> => {
     setFormError(null);
@@ -76,6 +87,7 @@ export function RegisterPage(): React.JSX.Element {
           error={errors.password?.message}
           {...register("password")}
         />
+        <PasswordStrengthMeter password={passwordValue} />
         <TextField
           label="Department (optional)"
           error={errors.department?.message}
@@ -85,6 +97,9 @@ export function RegisterPage(): React.JSX.Element {
           Create account
         </Button>
       </form>
+      <div className="mt-6">
+        <OAuthButtons />
+      </div>
       <p className="mt-6 font-body text-sm text-text-secondary">
         Already have an account?{" "}
         <Link to="/login" className="font-semibold text-ink-navy hover:underline transition-colors duration-200">

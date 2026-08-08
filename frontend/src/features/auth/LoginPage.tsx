@@ -9,6 +9,7 @@ import { TextField } from "@/components/ui/TextField";
 import { useAuth } from "@/core/auth/useAuth";
 import { ApiError } from "@/core/api/types";
 import { AuthLayout } from "@/features/auth/AuthLayout";
+import { OAuthButtons } from "@/features/auth/OAuthButtons";
 
 const schema = z.object({
   email: z.string().min(1, "Email is required").email("Enter a valid email address"),
@@ -69,6 +70,9 @@ export function LoginPage(): React.JSX.Element {
           Sign in
         </Button>
       </form>
+      <div className="mt-6">
+        <OAuthButtons />
+      </div>
       <div className="saas-interactive mt-6 flex justify-between font-body text-sm">
         <Link to="/forgot-password" className="text-ink-navy/85 dark:text-brass/85 hover:text-ink-navy dark:hover:text-brass font-medium transition-colors duration-200">
           Forgot password?

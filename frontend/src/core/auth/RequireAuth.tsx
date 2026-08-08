@@ -19,7 +19,7 @@ export function RequireAuth(): React.JSX.Element {
   }
 
   if (status === "unauthenticated") {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/welcome" state={{ from: location }} replace />;
   }
 
   return <Outlet />;

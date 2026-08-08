@@ -17,7 +17,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.errors import AppError, UnauthorizedError
-from app.core.security import CurrentUser, get_current_user
+from app.core.security import CurrentUser, VerifiedClaims, get_current_user, get_verified_claims
 from app.core.supabase import get_supabase_client
 from app.models.user import Role, User
 from app.services.auth.schemas import (
@@ -96,6 +96,43 @@ def login(payload: LoginRequest) -> TokenResponse:
         refresh_token=session.session.refresh_token,
         expires_in=session.session.expires_in,
     )
+
+
+@router.post("/oauth-sync", response_model=UserProfile)
+def oauth_sync(
+    claims: VerifiedClaims = Depends(get_verified_claims), db: Session = Depends(get_db)
+) -> UserProfile:
+    """Called by the frontend immediately after a Google/Microsoft/Facebook/Apple
+    OAuth redirect completes. Supabase Auth creates its own auth user on first
+    OAuth sign-in automatically, but that user never goes through `register`
+    above, so our own `users` row wouldn't exist yet — this just-in-time
+    provisions it on first sight, same student-only self-registration policy
+    as email/password signup (ADR-010).
+    """
+    user = db.get(User, claims.id)
+    if user is not None:
+        if not user.is_active:
+            raise UnauthorizedError("Account not found or deactivated.")
+        return UserProfile.model_validate(user)
+
+    if not claims.email:
+        raise AppError(
+            code="OAUTH_SYNC_FAILED",
+            message="Your identity provider did not share an email address.",
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+    user = User(
+        id=claims.id,
+        email=claims.email,
+        full_name=claims.full_name or claims.email.split("@", 1)[0],
+        role=Role.STUDENT,
+        department=None,
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return UserProfile.model_validate(user)
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)

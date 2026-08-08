@@ -69,6 +69,17 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
     [login],
   );
 
+  const completeOAuthLogin = useCallback(async (accessToken: string): Promise<void> => {
+    tokenStore.set(accessToken);
+    // Just-in-time provisions our own `users` row on a provider's first-ever
+    // sign-in (Supabase's own auth user already exists by this point; ours
+    // doesn't yet). No-ops for a returning OAuth user.
+    await apiClient.post("/auth/oauth-sync");
+    const profile = await fetchProfile();
+    setUser(profile);
+    setStatus("authenticated");
+  }, []);
+
   const logout = useCallback(async (): Promise<void> => {
     try {
       await apiClient.post("/auth/logout");
@@ -80,8 +91,8 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
   }, []);
 
   const value = useMemo(
-    () => ({ user, status, login, register, logout }),
-    [user, status, login, register, logout],
+    () => ({ user, status, login, register, completeOAuthLogin, logout }),
+    [user, status, login, register, completeOAuthLogin, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

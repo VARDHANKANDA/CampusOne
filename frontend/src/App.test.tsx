@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { App } from "@/App";
 
 describe("App", () => {
-  it("redirects an unauthenticated visitor to the login page", async () => {
+  it("redirects an unauthenticated visitor to the landing page", async () => {
     render(
       <MemoryRouter initialEntries={["/"]}>
         <App />
@@ -13,7 +13,9 @@ describe("App", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("heading", { name: /sign in/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: /one platform for your entire campus/i }),
+      ).toBeInTheDocument();
     });
   });
 });

@@ -35,6 +35,18 @@ class CurrentUser:
     department: str | None
 
 
+@dataclass(frozen=True)
+class VerifiedClaims:
+    """Identity from a verified Supabase JWT, without requiring a matching row
+    in our own `users` table — used only by the OAuth just-in-time
+    provisioning endpoint, where that row may not exist yet.
+    """
+
+    id: UUID
+    email: str | None
+    full_name: str | None
+
+
 _JWKS_CACHE_TTL_SECONDS = 3600
 _jwks_keys: list[dict] = []
 _jwks_fetched_at: float = 0.0
@@ -76,15 +88,18 @@ def _decode_token(token: str) -> dict:
         raise UnauthorizedError("Invalid or expired session.") from exc
 
 
+def _decode_bearer_header(authorization: str | None) -> dict:
+    if not authorization or not authorization.lower().startswith("bearer "):
+        raise UnauthorizedError("Missing bearer token.")
+    token = authorization.split(" ", 1)[1].strip()
+    return _decode_token(token)
+
+
 def get_current_user(
     authorization: Annotated[str | None, Header()] = None,
     db: Session = Depends(get_db),
 ) -> CurrentUser:
-    if not authorization or not authorization.lower().startswith("bearer "):
-        raise UnauthorizedError("Missing bearer token.")
-
-    token = authorization.split(" ", 1)[1].strip()
-    payload = _decode_token(token)
+    payload = _decode_bearer_header(authorization)
 
     subject = payload.get("sub")
     if not subject:
@@ -101,6 +116,18 @@ def get_current_user(
         full_name=user.full_name,
         department=user.department,
     )
+
+
+def get_verified_claims(authorization: Annotated[str | None, Header()] = None) -> VerifiedClaims:
+    payload = _decode_bearer_header(authorization)
+
+    subject = payload.get("sub")
+    if not subject:
+        raise UnauthorizedError("Token missing subject claim.")
+
+    user_metadata = payload.get("user_metadata") or {}
+    full_name = user_metadata.get("full_name") or user_metadata.get("name")
+    return VerifiedClaims(id=UUID(subject), email=payload.get("email"), full_name=full_name)
 
 
 def require_role(*allowed_roles: Role) -> Callable[[CurrentUser], CurrentUser]:
