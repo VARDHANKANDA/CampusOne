@@ -9,95 +9,14 @@ interface RoleInfo {
   icon: string;
   title: string;
   tagline: string;
-  can: string[];
 }
 
 const ROLES: RoleInfo[] = [
-  {
-    icon: "🎓",
-    title: "Student",
-    tagline: "The main end user.",
-    can: [
-      "View campus dashboard",
-      "Search classrooms/labs",
-      "Book available resources",
-      "Reserve lab seats",
-      "Submit hostel complaints",
-      "Track complaint status",
-      "Report lost & found items",
-      "View events & RSVP",
-      "Scan QR for attendance",
-      "View attendance history",
-      "View assigned equipment",
-      "Receive notifications",
-      "Manage profile/preferences",
-    ],
-  },
-  {
-    icon: "👨‍🏫",
-    title: "Faculty",
-    tagline: "Everything a student has, plus teaching-related capabilities.",
-    can: [
-      "Book classrooms & reserve labs",
-      "Create recurring bookings",
-      "Schedule events",
-      "Generate QR attendance",
-      "View & export attendance",
-      "Request equipment",
-      "View room availability",
-      "Cancel/modify their bookings",
-      "Manage their events",
-      "Receive notifications",
-    ],
-  },
-  {
-    icon: "🛠️",
-    title: "Maintenance Staff",
-    tagline: "Responsible for physical infrastructure.",
-    can: [
-      "View assigned maintenance tasks",
-      "Accept work orders",
-      "Update task status",
-      "Add comments",
-      "Upload repair photos",
-      "Record repair costs",
-      "Mark tasks completed",
-      "View maintenance history",
-      "Receive priority alerts",
-    ],
-  },
-  {
-    icon: "🏠",
-    title: "Hostel Warden",
-    tagline: "Responsible for hostel-related operations.",
-    can: [
-      "View hostel complaints",
-      "Filter by hostel/block/room",
-      "Assign maintenance staff",
-      "Change complaint priority",
-      "Escalate complaints & track SLA",
-      "Verify completed work",
-      "View complaint analytics",
-      "Communicate with students",
-      "View hostel maintenance history",
-    ],
-  },
-  {
-    icon: "🧑‍💼",
-    title: "Admin",
-    tagline: "The highest operational role.",
-    can: [
-      "Manage users, roles & permissions",
-      "Manage buildings, classrooms & labs",
-      "Manage equipment & inventory",
-      "Approve bookings",
-      "Manage events, complaints & maintenance",
-      "Manage notifications & settings",
-      "View analytics & audit logs",
-      "Configure system settings",
-      "Export reports",
-    ],
-  },
+  { icon: "🎓", title: "Student", tagline: "Bookings, complaints, attendance, and events." },
+  { icon: "👨‍🏫", title: "Faculty", tagline: "Classrooms, labs, attendance, and events." },
+  { icon: "🛠️", title: "Maintenance Staff", tagline: "Work orders and repair tracking." },
+  { icon: "🏠", title: "Hostel Warden", tagline: "Complaints, assignments, and SLAs." },
+  { icon: "🧑‍💼", title: "Admin", tagline: "Full operational control of the platform." },
 ];
 
 export function LandingPage(): React.JSX.Element {
@@ -138,42 +57,26 @@ export function LandingPage(): React.JSX.Element {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 pb-20">
+      <section className="mx-auto max-w-5xl px-6 pb-20">
         <h2 className="mb-8 text-center font-display text-xl font-bold text-text-primary sm:text-2xl">
           Built for every role on campus
         </h2>
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
           {ROLES.map((role) => (
-            <article
+            <Link
               key={role.title}
-              className="flex flex-col rounded-plaque border border-card-border bg-card-bg/70 backdrop-blur-md p-6 shadow-sm transition-all duration-200 hover:shadow-lg hover:border-ink-navy/30 dark:hover:border-brass/30"
+              to="/login"
+              className="group flex flex-col items-center gap-2 rounded-plaque border border-card-border bg-card-bg/70 backdrop-blur-md p-6 text-center shadow-sm transition-all duration-200 hover:shadow-lg hover:border-ink-navy/30 dark:hover:border-brass/30"
             >
-              <div className="mb-3 flex items-center gap-3">
-                <span className="text-3xl" aria-hidden="true">
-                  {role.icon}
-                </span>
-                <div>
-                  <h3 className="font-display text-lg font-bold text-text-primary">{role.title}</h3>
-                  <p className="font-body text-xs text-text-secondary">{role.tagline}</p>
-                </div>
-              </div>
-              <ul className="mb-5 flex max-h-52 flex-col gap-1.5 overflow-y-auto pr-1 font-body text-sm text-text-secondary">
-                {role.can.map((item) => (
-                  <li key={item} className="flex items-start gap-2">
-                    <span className="mt-0.5 text-quad-green" aria-hidden="true">
-                      ✓
-                    </span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link
-                to="/login"
-                className="mt-auto text-center font-body text-sm font-semibold text-ink-navy hover:underline dark:text-brass"
-              >
-                Sign in as {role.title} →
-              </Link>
-            </article>
+              <span className="text-4xl" aria-hidden="true">
+                {role.icon}
+              </span>
+              <h3 className="font-display text-base font-bold text-text-primary">{role.title}</h3>
+              <p className="font-body text-xs text-text-secondary">{role.tagline}</p>
+              <span className="mt-2 font-body text-xs font-semibold text-ink-navy group-hover:underline dark:text-brass">
+                Sign in →
+              </span>
+            </Link>
           ))}
         </div>
       </section>
