@@ -61,10 +61,10 @@ export function AppShell({ children }: { children: ReactNode }): React.JSX.Eleme
       <CommandPalette />
       
       {/* Sidebar Navigation */}
-      <aside className="flex w-64 flex-col border-r border-slate-200 dark:border-slate-800 bg-[#0b0f19] text-slate-300">
-        <div className="px-6 py-6 border-b border-slate-800/60">
-          <p className="font-display text-xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent">Smart Campus</p>
-          <p className="font-body text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-slate-800/40 px-2.5 py-1 rounded-full w-max mt-2 border border-slate-800">{ROLE_LABEL[user.role]}</p>
+      <aside className="flex w-64 flex-col border-r border-card-border bg-card-bg text-text-primary">
+        <div className="px-6 py-6 border-b border-card-border">
+          <p className="font-display text-xl font-extrabold tracking-tight bg-gradient-to-r from-ink-navy via-ink-navy to-brass bg-clip-text text-transparent">Smart Campus</p>
+          <p className="font-body text-[10px] font-bold text-text-secondary uppercase tracking-widest bg-card-bg px-2.5 py-1 rounded-full w-max mt-2 border border-card-border">{ROLE_LABEL[user.role]}</p>
         </div>
         
         <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
@@ -76,8 +76,8 @@ export function AppShell({ children }: { children: ReactNode }): React.JSX.Eleme
               className={({ isActive }) =>
                 `flex items-center gap-3 rounded-plaque px-3.5 py-2.5 font-body text-xs font-semibold tracking-wide transition-all duration-200 ${
                   isActive
-                    ? "bg-gradient-to-r from-ink-navy/25 to-brass/10 border-l-[3px] border-ink-navy text-white shadow-sm shadow-indigo-500/5"
-                    : "border-l-[3px] border-transparent text-slate-400 hover:bg-slate-800/40 hover:text-white"
+                    ? "bg-ink-navy/10 border-l-[3px] border-ink-navy text-ink-navy shadow-sm dark:bg-ink-navy/20 dark:text-white"
+                    : "border-l-[3px] border-transparent text-text-secondary hover:bg-ink-navy/5 hover:text-text-primary dark:hover:bg-white/5"
                 }`
               }
             >
@@ -87,12 +87,12 @@ export function AppShell({ children }: { children: ReactNode }): React.JSX.Eleme
         </nav>
 
         {/* User profile section */}
-        <div className="border-t border-slate-850 px-6 py-5 bg-black/20 flex flex-col gap-1">
-          <p className="truncate font-body text-xs font-bold text-white/90">{user.full_name || user.email}</p>
-          <p className="saas-interactive truncate font-body text-[10px] text-slate-400">{user.email}</p>
+        <div className="border-t border-card-border px-6 py-5 bg-card-bg/20 flex flex-col gap-1">
+          <p className="truncate font-body text-xs font-bold text-text-primary">{user.full_name || user.email}</p>
+          <p className="saas-interactive truncate font-body text-[10px] text-text-secondary">{user.email}</p>
           <button
             onClick={() => void logout()}
-            className="w-max mt-2 font-body text-[11px] font-semibold text-rose-400 hover:text-rose-300 hover:underline transition-colors duration-200"
+            className="w-max mt-2 font-body text-[11px] font-semibold text-brick hover:underline transition-colors duration-200"
           >
             Sign out
           </button>

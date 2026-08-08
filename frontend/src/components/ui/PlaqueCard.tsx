@@ -37,7 +37,7 @@ export function PlaqueCard({
             }
           : undefined
       }
-      className={`group relative overflow-hidden rounded-plaque border border-card-border bg-card-bg/50 backdrop-blur-sm p-5 shadow-sm transition-all duration-300 before:absolute before:inset-x-0 before:top-0 before:h-[2px] before:bg-gradient-to-r before:from-ink-navy before:to-brass-light before:opacity-80 ${interactive ? "cursor-pointer hover:-translate-y-1 hover:shadow-md hover:shadow-indigo-500/5 hover:border-ink-navy/30 dark:hover:border-ink-navy/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-navy/50" : ""} ${className}`}
+      className={`group relative overflow-hidden rounded-plaque border border-card-border bg-card-bg/50 backdrop-blur-sm p-5 shadow-sm transition-all duration-300 before:absolute before:inset-x-0 before:top-0 before:h-[2px] before:bg-gradient-to-r before:from-ink-navy before:to-brass-light before:opacity-80 ${interactive ? "cursor-pointer hover:-translate-y-1 hover:shadow-md hover:shadow-rose-500/5 hover:border-ink-navy/30 dark:hover:border-ink-navy/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-navy/50" : ""} ${className}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div>

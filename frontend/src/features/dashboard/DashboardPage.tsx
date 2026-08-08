@@ -284,29 +284,29 @@ export function DashboardPage(): React.JSX.Element {
       case "student":
         return [
           { label: "Book a Lab", path: "/labs/reserve", style: "border border-brass/30 text-brass hover:bg-brass/10 hover:border-brass/50 transition-all duration-200" },
-          { label: "Report Hostel Issue", path: "/complaints/new", style: "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-indigo-500/10 hover:shadow-md transition-all duration-200" },
-          { label: "Scan Class QR", path: "/attendance/scan", style: "bg-gradient-to-r from-brass to-brass-light text-white hover:opacity-95 font-semibold transition-all duration-200 shadow-sm shadow-purple-500/10 hover:shadow-md" },
+          { label: "Report Hostel Issue", path: "/complaints/new", style: "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-rose-500/10 hover:shadow-md transition-all duration-200" },
+          { label: "Scan Class QR", path: "/attendance/scan", style: "bg-gradient-to-r from-brass to-brass-light text-white hover:opacity-95 font-semibold transition-all duration-200 shadow-sm shadow-amber-500/10 hover:shadow-md" },
         ];
       case "faculty":
         return [
           { label: "Schedule Seminar/Event", path: "/events/new", style: "border border-brass/30 text-brass hover:bg-brass/10 hover:border-brass/50 transition-all duration-200" },
-          { label: "Book Lecture Hall", path: "/bookings/new", style: "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-indigo-500/10 hover:shadow-md transition-all duration-200" },
-          { label: "Start QR Attendance", path: "/attendance/generate", style: "bg-gradient-to-r from-brass to-brass-light text-white hover:opacity-95 font-semibold transition-all duration-200 shadow-sm shadow-purple-500/10 hover:shadow-md" },
+          { label: "Book Lecture Hall", path: "/bookings/new", style: "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-rose-500/10 hover:shadow-md transition-all duration-200" },
+          { label: "Start QR Attendance", path: "/attendance/generate", style: "bg-gradient-to-r from-brass to-brass-light text-white hover:opacity-95 font-semibold transition-all duration-200 shadow-sm shadow-amber-500/10 hover:shadow-md" },
         ];
       case "warden":
         return [
-          { label: "Complaints Queue", path: "/complaints/queue", style: "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-indigo-500/10 hover:shadow-md transition-all duration-200" },
+          { label: "Complaints Queue", path: "/complaints/queue", style: "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-rose-500/10 hover:shadow-md transition-all duration-200" },
           { label: "Assigned Status Reports", path: "/complaints/assign", style: "border border-brass/30 text-brass hover:bg-brass/10 hover:border-brass/50 transition-all duration-200" },
         ];
       case "maintenance_staff":
         return [
-          { label: "Open Tasks List", path: "/maintenance/tasks", style: "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-indigo-500/10 hover:shadow-md transition-all duration-200" },
+          { label: "Open Tasks List", path: "/maintenance/tasks", style: "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-rose-500/10 hover:shadow-md transition-all duration-200" },
         ];
       case "admin":
         return [
           { label: "Users Registry", path: "/admin/users", style: "border border-brass/30 text-brass hover:bg-brass/10 hover:border-brass/50 transition-all duration-200" },
-          { label: "Manage Classrooms", path: "/admin/rooms", style: "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-indigo-500/10 hover:shadow-md transition-all duration-200" },
-          { label: "Audit Trails", path: "/admin/audit-logs", style: "bg-gradient-to-r from-brass to-brass-light text-white hover:opacity-95 font-semibold transition-all duration-200 shadow-sm shadow-purple-500/10 hover:shadow-md" },
+          { label: "Manage Classrooms", path: "/admin/rooms", style: "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-rose-500/10 hover:shadow-md transition-all duration-200" },
+          { label: "Audit Trails", path: "/admin/audit-logs", style: "bg-gradient-to-r from-brass to-brass-light text-white hover:opacity-95 font-semibold transition-all duration-200 shadow-sm shadow-amber-500/10 hover:shadow-md" },
         ];
       default:
         return [];

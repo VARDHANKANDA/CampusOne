@@ -4,52 +4,52 @@
 
 /* Premium SaaS styling tokens & color overrides */
 :root {
-  --bg-canvas: #f8fafc;
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
+  --bg-canvas: #fff7ed;
+  --text-primary: #242424;
+  --text-secondary: #5e5349;
   --card-bg: #ffffff;
-  --card-border: rgba(226, 232, 240, 0.8);
+  --card-border: rgba(36, 36, 36, 0.08);
 
-  --ink-navy: #4f46e5;
-  --brass: #8b5cf6;
-  --brass-light: #06b6d4;
-  --quad-green: #10b981;
-  --brick: #f43f5e;
+  --ink-navy: #ff5a5f;
+  --brass: #ffb703;
+  --brass-light: #ffd666;
+  --quad-green: #16a34a;
+  --brick: #ef4444;
   --chalk: #ffffff;
-  --slate: #64748b;
+  --slate: #7a7067;
 }
 
 .dark {
-  --bg-canvas: #030712;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --card-bg: #0f172a;
-  --card-border: rgba(30, 41, 59, 0.8);
+  --bg-canvas: #171717;
+  --text-primary: #fff7ed;
+  --text-secondary: #c7bdb3;
+  --card-bg: #242424;
+  --card-border: rgba(255, 255, 255, 0.08);
 
-  --ink-navy: #6366f1;
-  --brass: #a78bfa;
-  --brass-light: #22d3ee;
+  --ink-navy: #ff5a5f;
+  --brass: #ffb703;
+  --brass-light: #ffd666;
   --quad-green: #34d399;
-  --brick: #fb7185;
-  --chalk: #030712;
-  --slate: #94a3b8;
+  --brick: #f87171;
+  --chalk: #171717;
+  --slate: #8f857b;
 }
 
 body {
   @apply bg-[var(--bg-canvas)] text-[var(--text-primary)] font-body antialiased transition-colors duration-200;
-  background-image: radial-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 0), radial-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 0);
+  background-image: radial-gradient(rgba(255, 90, 95, 0.03) 1px, transparent 0), radial-gradient(rgba(255, 183, 3, 0.03) 1px, transparent 0);
   background-size: 40px 40px;
   background-position: 0 0, 20px 20px;
 }
 
 .saas-grid-bg {
-  background-image: radial-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 0), radial-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 0);
+  background-image: radial-gradient(rgba(255, 90, 95, 0.03) 1px, transparent 0), radial-gradient(rgba(255, 183, 3, 0.03) 1px, transparent 0);
   background-size: 40px 40px;
   background-position: 0 0, 20px 20px;
 }
 
 .dark .saas-grid-bg {
-  background-image: radial-gradient(rgba(99, 102, 241, 0.15) 1px, transparent 0), radial-gradient(rgba(139, 92, 246, 0.15) 1px, transparent 0);
+  background-image: radial-gradient(rgba(255, 90, 95, 0.08) 1px, transparent 0), radial-gradient(rgba(255, 183, 3, 0.08) 1px, transparent 0);
   background-size: 40px 40px;
   background-position: 0 0, 20px 20px;
 }
