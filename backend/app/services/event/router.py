@@ -11,18 +11,18 @@ from datetime import datetime
 from uuid import UUID
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Query, status
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.errors import AppError, ConflictError, ForbiddenError, NotFoundError
 from app.core.security import CurrentUser, get_current_user, require_role
-from app.models.event import Event, EventStatus
+from app.models.event import Event, EventRSVP, EventStatus
 from app.models.maintenance import MaintenanceSchedule
-from app.models.user import Role
+from app.models.user import Role, User
 from app.services.audit.service import record_audit_log
-from app.services.event.schemas import EventCreate, EventOut
+from app.services.event.schemas import AttendeeOut, EventCreate, EventOut, EventRSVPStatusOut
 
 router = APIRouter(prefix="/events", tags=["events"])
 
@@ -160,12 +160,6 @@ def cancel_event(
     return event
 
 
-from sqlalchemy import func
-from app.models.event import EventRSVP
-from app.models.user import User
-from app.services.event.schemas import AttendeeOut, EventRSVPStatusOut
-
-
 @router.get("/{event_id}/rsvp", response_model=EventRSVPStatusOut)
 def get_event_rsvp_status(
     event_id: UUID,
@@ -175,15 +169,20 @@ def get_event_rsvp_status(
     event = db.get(Event, event_id)
     if event is None:
         raise NotFoundError("Event not found")
-    
+
     rsvp_count = db.execute(
         select(func.count()).select_from(EventRSVP).where(EventRSVP.event_id == event_id)
     ).scalar_one()
-    
-    user_rsvped = db.execute(
-        select(EventRSVP).where(EventRSVP.event_id == event_id, EventRSVP.user_id == current_user.id)
-    ).scalar_one_or_none() is not None
-    
+
+    user_rsvped = (
+        db.execute(
+            select(EventRSVP).where(
+                EventRSVP.event_id == event_id, EventRSVP.user_id == current_user.id
+            )
+        ).scalar_one_or_none()
+        is not None
+    )
+
     return {"rsvp_count": rsvp_count, "user_rsvped": user_rsvped}
 
 
@@ -198,11 +197,13 @@ def rsvp_to_event(
         raise NotFoundError("Event not found")
     if event.status != EventStatus.SCHEDULED:
         raise AppError("EVENT_NOT_ACTIVE", "Cannot RSVP to a cancelled event.", status_code=400)
-    
+
     existing = db.execute(
-        select(EventRSVP).where(EventRSVP.event_id == event_id, EventRSVP.user_id == current_user.id)
+        select(EventRSVP).where(
+            EventRSVP.event_id == event_id, EventRSVP.user_id == current_user.id
+        )
     ).scalar_one_or_none()
-    
+
     if existing is None:
         new_rsvp = EventRSVP(event_id=event_id, user_id=current_user.id)
         db.add(new_rsvp)
@@ -211,11 +212,11 @@ def rsvp_to_event(
         except IntegrityError:
             db.rollback()
             pass
-            
+
     rsvp_count = db.execute(
         select(func.count()).select_from(EventRSVP).where(EventRSVP.event_id == event_id)
     ).scalar_one()
-    
+
     return {"rsvp_count": rsvp_count, "user_rsvped": True}
 
 
@@ -228,19 +229,21 @@ def cancel_event_rsvp(
     event = db.get(Event, event_id)
     if event is None:
         raise NotFoundError("Event not found")
-        
+
     existing = db.execute(
-        select(EventRSVP).where(EventRSVP.event_id == event_id, EventRSVP.user_id == current_user.id)
+        select(EventRSVP).where(
+            EventRSVP.event_id == event_id, EventRSVP.user_id == current_user.id
+        )
     ).scalar_one_or_none()
-    
+
     if existing is not None:
         db.delete(existing)
         db.commit()
-        
+
     rsvp_count = db.execute(
         select(func.count()).select_from(EventRSVP).where(EventRSVP.event_id == event_id)
     ).scalar_one()
-    
+
     return {"rsvp_count": rsvp_count, "user_rsvped": False}
 
 
@@ -253,10 +256,16 @@ def get_event_attendees(
     event = db.get(Event, event_id)
     if event is None:
         raise NotFoundError("Event not found")
-        
-    if current_user.role != Role.ADMIN and event.organizer_id != current_user.id:
-        raise ForbiddenError("Only the organizer or an administrator can view the attendee register.")
-        
-    query = select(User).join(EventRSVP, EventRSVP.user_id == User.id).where(EventRSVP.event_id == event_id).order_by(User.full_name)
-    return list(db.execute(query).scalars().all())
 
+    if current_user.role != Role.ADMIN and event.organizer_id != current_user.id:
+        raise ForbiddenError(
+            "Only the organizer or an administrator can view the attendee register."
+        )
+
+    query = (
+        select(User)
+        .join(EventRSVP, EventRSVP.user_id == User.id)
+        .where(EventRSVP.event_id == event_id)
+        .order_by(User.full_name)
+    )
+    return list(db.execute(query).scalars().all())

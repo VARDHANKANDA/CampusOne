@@ -3,6 +3,7 @@ warden (Module 5's assignment flow, docs/DECISIONS.md ADR-015). The rest
 (`GET/PATCH/DELETE /users/{id}`) is Module 14 — Admin Panel.
 """
 
+import logging
 from uuid import UUID
 
 from fastapi import APIRouter, BackgroundTasks, Depends
@@ -10,11 +11,14 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.core.errors import ForbiddenError, NotFoundError
+from app.core.errors import AppError, ForbiddenError, NotFoundError
 from app.core.security import CurrentUser, get_current_user, require_role
+from app.core.supabase import get_supabase_client
 from app.models.user import Role, User
 from app.services.audit.service import record_audit_log
-from app.services.users.schemas import UserOut, UserUpdate
+from app.services.users.schemas import UserCreate, UserOut, UserUpdate
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -121,14 +125,6 @@ def deactivate_user(
     return user
 
 
-import logging
-from app.core.errors import AppError
-from app.core.supabase import get_supabase_client
-from app.services.users.schemas import UserCreate
-
-logger = logging.getLogger(__name__)
-
-
 @router.post("", response_model=UserOut, status_code=201)
 def create_user(
     payload: UserCreate,
@@ -182,4 +178,3 @@ def create_user(
         after_state=UserOut.model_validate(user).model_dump(mode="json"),
     )
     return user
-

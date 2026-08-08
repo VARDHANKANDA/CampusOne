@@ -28,4 +28,3 @@ class UserCreate(BaseModel):
     full_name: str
     role: Role = Role.STUDENT
     department: str | None = None
-

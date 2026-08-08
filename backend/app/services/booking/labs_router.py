@@ -15,7 +15,7 @@ from app.core.database import get_db
 from app.core.errors import AppError
 from app.core.security import CurrentUser, require_role
 from app.models.campus import Room, RoomType
-from app.models.reservation import Booking, WaitlistEntry
+from app.models.reservation import Booking, BookingStatus, WaitlistEntry
 from app.models.user import Role
 from app.services.audit.service import record_audit_log
 from app.services.booking.conflicts import find_conflict
@@ -164,5 +164,4 @@ def get_occupied_seats(
         Booking.start_time < end_time,
         Booking.end_time > start_time,
     )
-    return list(db.execute(query).scalars().all())
-
+    return [seat for seat in db.execute(query).scalars().all() if seat is not None]

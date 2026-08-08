@@ -76,7 +76,7 @@ def test_event_attendees_permissions(client: TestClient, db_session: Session) ->
     faculty_organizer = create_user(db_session, Role.FACULTY, email="org@example.edu")
     faculty_other = create_user(db_session, Role.FACULTY, email="other@example.edu")
     admin = create_user(db_session, Role.ADMIN)
-    
+
     room = _make_room(db_session)
     event = _make_event(db_session, faculty_organizer.id, room.id)
 
@@ -88,11 +88,15 @@ def test_event_attendees_permissions(client: TestClient, db_session: Session) ->
     assert student_read.status_code == 403
 
     # 2. Other faculty attempts to read attendee register -> Forbidden 403
-    other_read = client.get(f"/api/v1/events/{event.id}/attendees", headers=auth_headers(faculty_other))
+    other_read = client.get(
+        f"/api/v1/events/{event.id}/attendees", headers=auth_headers(faculty_other)
+    )
     assert other_read.status_code == 403
 
     # 3. Organizer reads attendee register -> OK 200, lists student
-    organizer_read = client.get(f"/api/v1/events/{event.id}/attendees", headers=auth_headers(faculty_organizer))
+    organizer_read = client.get(
+        f"/api/v1/events/{event.id}/attendees", headers=auth_headers(faculty_organizer)
+    )
     assert organizer_read.status_code == 200
     attendees = organizer_read.json()
     assert len(attendees) == 1

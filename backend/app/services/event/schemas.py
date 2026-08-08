@@ -45,4 +45,3 @@ class AttendeeOut(BaseModel):
 class EventRSVPStatusOut(BaseModel):
     rsvp_count: int
     user_rsvped: bool
-

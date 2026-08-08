@@ -60,7 +60,9 @@ class Booking(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         nullable=False,
         default=RecurrenceType.NONE,
     )
-    recurrence_end_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    recurrence_end_date: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     recurrence_parent_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True), ForeignKey("bookings.id", ondelete="CASCADE"), nullable=True
     )

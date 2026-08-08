@@ -59,16 +59,21 @@ def create_booking_or_raise(
         slots.append((start_time, end_time))
 
     # 2. Check conflicts for ALL slots in advance
-    for idx, (s_start, s_end) in enumerate(slots):
+    for s_start, s_end in slots:
         conflict = find_conflict(db, room.id, s_start, s_end, seat_number=seat_number)
         if conflict is not None:
             if recurrence_type == RecurrenceType.NONE:
                 raise conflict_to_error(conflict)
             else:
                 date_str = s_start.strftime("%Y-%m-%d")
+                window = f"{s_start.strftime('%H:%M')} - {s_end.strftime('%H:%M')}"
                 raise ConflictError(
-                    f"Recurrence slot conflict on {date_str} ({s_start.strftime('%H:%M')} - {s_end.strftime('%H:%M')}).",
-                    details={"conflict_date": date_str, "start": s_start.isoformat(), "end": s_end.isoformat()}
+                    f"Recurrence slot conflict on {date_str} ({window}).",
+                    details={
+                        "conflict_date": date_str,
+                        "start": s_start.isoformat(),
+                        "end": s_end.isoformat(),
+                    },
                 )
 
     # 3. Create parent booking
@@ -120,4 +125,3 @@ def create_booking_or_raise(
             ) from exc
 
     return booking
-

@@ -73,4 +73,3 @@ class Complaint(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     sla_due_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     sla_breached: Mapped[bool] = mapped_column(nullable=False, default=False)
     escalated_to_admin: Mapped[bool] = mapped_column(nullable=False, default=False)
-

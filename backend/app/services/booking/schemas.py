@@ -46,4 +46,3 @@ class AvailabilityResult(BaseModel):
     room: RoomOut
     available: bool
     conflicting_window: tuple[datetime, datetime] | None = None
-

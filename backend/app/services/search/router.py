@@ -1,4 +1,5 @@
 from uuid import UUID
+
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from sqlalchemy import or_, select
@@ -29,7 +30,9 @@ class SearchResultItem(BaseModel):
 def search_all(
     q: str,
     db: Session = Depends(get_db),
-    current_user: CurrentUser = Depends(require_role(Role.STUDENT, Role.FACULTY, Role.WARDEN, Role.MAINTENANCE_STAFF, Role.ADMIN)),
+    current_user: CurrentUser = Depends(
+        require_role(Role.STUDENT, Role.FACULTY, Role.WARDEN, Role.MAINTENANCE_STAFF, Role.ADMIN)
+    ),
 ) -> list[SearchResultItem]:
     if not q or len(q) < 2:
         return []
@@ -38,9 +41,7 @@ def search_all(
     term = f"%{q}%"
 
     # 1. Search Rooms (Admin/Faculty/Student viewable)
-    rooms = db.execute(
-        select(Room).where(Room.name.ilike(term)).limit(5)
-    ).scalars().all()
+    rooms = db.execute(select(Room).where(Room.name.ilike(term)).limit(5)).scalars().all()
     for r in rooms:
         results.append(
             SearchResultItem(
@@ -58,18 +59,28 @@ def search_all(
         complaints_query = complaints_query.where(Complaint.reporter_id == current_user.id)
     elif current_user.role == Role.MAINTENANCE_STAFF:
         complaints_query = complaints_query.where(Complaint.assigned_to == current_user.id)
-    
-    complaints = db.execute(
-        complaints_query.where(
-            or_(
-                Complaint.description.ilike(term),
-                Complaint.category.cast(str).ilike(term),
-            )
-        ).limit(5)
-    ).scalars().all()
+
+    complaints = (
+        db.execute(
+            complaints_query.where(
+                or_(
+                    Complaint.description.ilike(term),
+                    Complaint.category.cast(str).ilike(term),
+                )
+            ).limit(5)
+        )
+        .scalars()
+        .all()
+    )
     for c in complaints:
-        url = "/complaints/mine" if current_user.role == Role.STUDENT else (
-            "/maintenance/tasks" if current_user.role == Role.MAINTENANCE_STAFF else "/complaints/queue"
+        url = (
+            "/complaints/mine"
+            if current_user.role == Role.STUDENT
+            else (
+                "/maintenance/tasks"
+                if current_user.role == Role.MAINTENANCE_STAFF
+                else "/complaints/queue"
+            )
         )
         results.append(
             SearchResultItem(
@@ -86,11 +97,9 @@ def search_all(
     if current_user.role != Role.ADMIN:
         bookings_query = bookings_query.where(Booking.requester_id == current_user.id)
 
-    bookings = db.execute(
-        bookings_query.where(
-            Booking.purpose.ilike(term)
-        ).limit(5)
-    ).scalars().all()
+    bookings = (
+        db.execute(bookings_query.where(Booking.purpose.ilike(term)).limit(5)).scalars().all()
+    )
     for b in bookings:
         results.append(
             SearchResultItem(
@@ -103,14 +112,20 @@ def search_all(
         )
 
     # 4. Search Equipment
-    equipment = db.execute(
-        select(Equipment).where(
-            or_(
-                Equipment.name.ilike(term),
-                Equipment.category.cast(str).ilike(term),
+    equipment = (
+        db.execute(
+            select(Equipment)
+            .where(
+                or_(
+                    Equipment.name.ilike(term),
+                    Equipment.category.cast(str).ilike(term),
+                )
             )
-        ).limit(5)
-    ).scalars().all()
+            .limit(5)
+        )
+        .scalars()
+        .all()
+    )
     for eq in equipment:
         results.append(
             SearchResultItem(
@@ -118,14 +133,14 @@ def search_all(
                 type="equipment",
                 title=f"Equipment: {eq.name}",
                 subtitle=f"Status: {eq.status.value} · {eq.category.value}",
-                url="/admin/equipment" if current_user.role == Role.ADMIN else "/equipment/requests",
+                url=(
+                    "/admin/equipment" if current_user.role == Role.ADMIN else "/equipment/requests"
+                ),
             )
         )
 
     # 5. Search Events
-    events = db.execute(
-        select(Event).where(Event.title.ilike(term)).limit(5)
-    ).scalars().all()
+    events = db.execute(select(Event).where(Event.title.ilike(term)).limit(5)).scalars().all()
     for ev in events:
         results.append(
             SearchResultItem(
@@ -138,9 +153,11 @@ def search_all(
         )
 
     # 6. Search Lost & Found
-    lf_items = db.execute(
-        select(LostFoundItem).where(LostFoundItem.description.ilike(term)).limit(5)
-    ).scalars().all()
+    lf_items = (
+        db.execute(select(LostFoundItem).where(LostFoundItem.description.ilike(term)).limit(5))
+        .scalars()
+        .all()
+    )
     for lf in lf_items:
         results.append(
             SearchResultItem(

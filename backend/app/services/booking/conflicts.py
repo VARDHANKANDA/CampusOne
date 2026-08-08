@@ -64,7 +64,8 @@ def find_conflict(
 
     # Seat collision rules:
     if seat_number is not None:
-        # A booking for a seat conflicts if another booking is for the whole room (seat_number is null) OR same seat
+        # A booking for a seat conflicts if another booking is for the whole
+        # room (seat_number is null) OR the same seat.
         query = query.where(
             or_(
                 Booking.seat_number.is_(None),

@@ -14,7 +14,6 @@ from app.models.lost_found import LostFoundItem, LostFoundStatus, LostFoundType
 from app.models.user import Role
 from app.services.audit.service import record_audit_log
 from app.services.lost_found.schemas import LostFoundOut, LostFoundStatusUpdate
-
 from app.services.notification.service import queue_notification
 
 router = APIRouter(prefix="/lost-found", tags=["lost-found"])
@@ -26,7 +25,9 @@ def check_lost_found_similarity(db: Session, new_item: LostFoundItem) -> list[Lo
     if not keywords:
         return []
 
-    opposite_type = LostFoundType.FOUND if new_item.type == LostFoundType.LOST else LostFoundType.LOST
+    opposite_type = (
+        LostFoundType.FOUND if new_item.type == LostFoundType.LOST else LostFoundType.LOST
+    )
     query = select(LostFoundItem).where(
         LostFoundItem.type == opposite_type,
         LostFoundItem.status == LostFoundStatus.OPEN,
@@ -77,7 +78,9 @@ async def report_item(
             {
                 "item_id": str(item.id),
                 "matched_item_id": str(match.id),
-                "message": f"Potential match found for your reported item: {match.description[:40]}...",
+                "message": (
+                    f"Potential match found for your reported item: {match.description[:40]}..."
+                ),
             },
         )
         background_tasks.add_task(
@@ -87,7 +90,9 @@ async def report_item(
             {
                 "item_id": str(match.id),
                 "matched_item_id": str(item.id),
-                "message": f"Potential match found for your reported item: {item.description[:40]}...",
+                "message": (
+                    f"Potential match found for your reported item: {item.description[:40]}..."
+                ),
             },
         )
 

@@ -61,7 +61,4 @@ class EventRSVP(UUIDPrimaryKeyMixin, Base):
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 
-    __table_args__ = (
-        UniqueConstraint("event_id", "user_id", name="uq_event_user_rsvp"),
-    )
-
+    __table_args__ = (UniqueConstraint("event_id", "user_id", name="uq_event_user_rsvp"),)

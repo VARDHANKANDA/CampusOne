@@ -5,7 +5,7 @@ every transition is checked against VALID_COMPLAINT_TRANSITIONS before the
 write — invalid transitions 400, never silently succeed or no-op.
 """
 
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 from typing import Literal
 from uuid import UUID
 
@@ -89,24 +89,30 @@ async def submit_complaint(
 
 
 def _update_complaint_sla(db: Session, complaint: Complaint) -> None:
-    if (
-        complaint.sla_due_at
-        and complaint.status not in (ComplaintStatus.COMPLETED, ComplaintStatus.VERIFIED)
+    if complaint.sla_due_at and complaint.status not in (
+        ComplaintStatus.COMPLETED,
+        ComplaintStatus.VERIFIED,
     ):
         now = datetime.now(UTC)
-        if now > complaint.sla_due_at:
-            if not complaint.sla_breached or not complaint.escalated_to_admin:
-                complaint.sla_breached = True
-                complaint.escalated_to_admin = True
-                db.commit()
+        if now > complaint.sla_due_at and (
+            not complaint.sla_breached or not complaint.escalated_to_admin
+        ):
+            complaint.sla_breached = True
+            complaint.escalated_to_admin = True
+            db.commit()
 
 
 def _format_complaint_out(db: Session, complaint: Complaint) -> dict:
     from app.models.maintenance import MaintenanceRequest
-    req = db.execute(
-        select(MaintenanceRequest).where(MaintenanceRequest.complaint_id == complaint.id)
-    ).scalars().first()
-    
+
+    req = (
+        db.execute(
+            select(MaintenanceRequest).where(MaintenanceRequest.complaint_id == complaint.id)
+        )
+        .scalars()
+        .first()
+    )
+
     return {
         "id": complaint.id,
         "reporter_id": complaint.reporter_id,
@@ -148,7 +154,7 @@ def list_complaints(
         query = query.where(Complaint.category == category)
     if priority is not None:
         query = query.where(Complaint.priority == priority)
-    
+
     complaints = list(db.execute(query.order_by(Complaint.created_at.desc())).scalars().all())
     for c in complaints:
         _update_complaint_sla(db, c)
@@ -160,7 +166,7 @@ def _get_visible_complaint(db: Session, complaint_id: UUID, current_user: Curren
     if complaint is None:
         raise NotFoundError("Complaint not found")
     _update_complaint_sla(db, complaint)
-    
+
     is_visible = (
         current_user.role in (Role.WARDEN, Role.ADMIN)
         or complaint.reporter_id == current_user.id

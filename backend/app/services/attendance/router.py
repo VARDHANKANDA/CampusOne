@@ -158,7 +158,9 @@ def rotate_session_token(
     if session.faculty_id != current_user.id:
         raise ForbiddenError("Only the faculty owner can rotate this session's token.")
     if session.expires_at <= datetime.now(UTC):
-        raise AppError("SESSION_EXPIRED", "This attendance session has already expired.", status_code=400)
+        raise AppError(
+            "SESSION_EXPIRED", "This attendance session has already expired.", status_code=400
+        )
 
     session.qr_token = secrets.token_urlsafe(32)
     db.commit()
