@@ -69,11 +69,11 @@ export function LoginPage(): React.JSX.Element {
           Sign in
         </Button>
       </form>
-      <div className="saas-interactive mt-6 flex justify-between font-body text-sm text-text-secondary">
-        <Link to="/forgot-password" className="hover:text-ink-navy font-medium transition-colors duration-200">
+      <div className="saas-interactive mt-6 flex justify-between font-body text-sm">
+        <Link to="/forgot-password" className="text-ink-navy/85 dark:text-brass/85 hover:text-ink-navy dark:hover:text-brass font-medium transition-colors duration-200">
           Forgot password?
         </Link>
-        <Link to="/register" className="hover:text-ink-navy font-medium transition-colors duration-200">
+        <Link to="/register" className="text-ink-navy/85 dark:text-brass/85 hover:text-ink-navy dark:hover:text-brass font-medium transition-colors duration-200">
           Create account
         </Link>
       </div>

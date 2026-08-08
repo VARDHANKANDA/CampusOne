@@ -76,7 +76,7 @@ export function AppShell({ children }: { children: ReactNode }): React.JSX.Eleme
               className={({ isActive }) =>
                 `flex items-center gap-3 rounded-plaque px-3.5 py-2.5 font-body text-xs font-semibold tracking-wide transition-all duration-200 ${
                   isActive
-                    ? "bg-ink-navy/10 border-l-[3px] border-ink-navy text-ink-navy shadow-sm dark:bg-ink-navy/20 dark:text-white"
+                    ? "bg-ink-navy/10 border-l-[3px] border-ink-navy text-ink-navy dark:bg-brass/10 dark:border-brass dark:text-brass shadow-sm"
                     : "border-l-[3px] border-transparent text-text-secondary hover:bg-ink-navy/5 hover:text-text-primary dark:hover:bg-white/5"
                 }`
               }
