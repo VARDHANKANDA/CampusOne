@@ -63,7 +63,7 @@ export function AppShell({ children }: { children: ReactNode }): React.JSX.Eleme
       {/* Sidebar Navigation */}
       <aside className="flex w-64 flex-col border-r border-card-border bg-card-bg text-text-primary">
         <div className="px-6 py-6 border-b border-card-border">
-          <p className="font-display text-xl font-extrabold tracking-tight bg-gradient-to-r from-ink-navy via-ink-navy to-brass bg-clip-text text-transparent">Smart Campus</p>
+          <p className="font-display text-xl font-extrabold tracking-tight bg-gradient-to-r from-ink-navy via-ink-navy to-brass bg-clip-text text-transparent">VIT-AP</p>
           <p className="font-body text-[10px] font-bold text-text-secondary uppercase tracking-widest bg-card-bg px-2.5 py-1 rounded-full w-max mt-2 border border-card-border">{ROLE_LABEL[user.role]}</p>
         </div>
         
@@ -88,14 +88,26 @@ export function AppShell({ children }: { children: ReactNode }): React.JSX.Eleme
 
         {/* User profile section */}
         <div className="border-t border-card-border px-6 py-5 bg-card-bg/20 flex flex-col gap-1">
-          <p className="truncate font-body text-xs font-bold text-text-primary">{user.full_name || user.email}</p>
-          <p className="saas-interactive truncate font-body text-[10px] text-text-secondary">{user.email}</p>
-          <button
-            onClick={() => void logout()}
-            className="w-max mt-2 font-body text-[11px] font-semibold text-brick hover:underline transition-colors duration-200"
-          >
-            Sign out
-          </button>
+          <Link to="/profile" className="group">
+            <p className="truncate font-body text-xs font-bold text-text-primary group-hover:text-ink-navy dark:group-hover:text-brass transition-colors duration-200">
+              {user.full_name || user.email}
+            </p>
+            <p className="saas-interactive truncate font-body text-[10px] text-text-secondary">{user.email}</p>
+          </Link>
+          <div className="mt-2 flex items-center gap-3">
+            <Link
+              to="/profile"
+              className="font-body text-[11px] font-semibold text-ink-navy hover:underline dark:text-brass transition-colors duration-200"
+            >
+              My Profile
+            </Link>
+            <button
+              onClick={() => void logout()}
+              className="font-body text-[11px] font-semibold text-brick hover:underline transition-colors duration-200"
+            >
+              Sign out
+            </button>
+          </div>
         </div>
       </aside>
 

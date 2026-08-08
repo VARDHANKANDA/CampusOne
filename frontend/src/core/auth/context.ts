@@ -13,6 +13,9 @@ export interface AuthContextValue {
    * session token already established by the OAuth redirect, then syncs/creates
    * our own `users` row for it (see AuthCallbackPage). */
   completeOAuthLogin: (accessToken: string) => Promise<void>;
+  /** Re-fetches /auth/me — call after a profile edit so `user` reflects it
+   * immediately, without requiring a full page reload. */
+  refreshProfile: () => Promise<void>;
   logout: () => Promise<void>;
 }
 

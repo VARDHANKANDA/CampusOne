@@ -14,7 +14,7 @@ describe("App", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByRole("heading", { name: /one platform for your entire campus/i }),
+        screen.getByRole("heading", { name: /one platform for the vit-ap campus/i }),
       ).toBeInTheDocument();
     });
   });

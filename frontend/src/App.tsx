@@ -35,6 +35,7 @@ import { LostFoundPage } from "@/features/lostfound/LostFoundPage";
 import { MyTasksPage } from "@/features/maintenance/MyTasksPage";
 import { NotificationSettingsPage } from "@/features/notification/NotificationSettingsPage";
 import { NotificationsPage } from "@/features/notification/NotificationsPage";
+import { ProfilePage } from "@/features/profile/ProfilePage";
 import { NAV_BY_ROLE } from "@/routes/navigation";
 
 // Routes with a real implementation — excluded from the generic placeholder list below.
@@ -58,6 +59,7 @@ const IMPLEMENTED_PATHS = new Set([
   "/events",
   "/events/new",
   "/notifications",
+  "/profile",
   "/admin/notification-settings",
   "/admin/reports",
   "/admin/audit-logs",
@@ -124,6 +126,15 @@ export function App(): React.JSX.Element {
             element={
               <AppShell>
                 <NotificationsPage />
+              </AppShell>
+            }
+          />
+          {/* Profile is self-service and open to any authenticated role. */}
+          <Route
+            path="/profile"
+            element={
+              <AppShell>
+                <ProfilePage />
               </AppShell>
             }
           />

@@ -24,7 +24,7 @@ export function LandingPage(): React.JSX.Element {
     <main className="saas-grid-bg min-h-screen bg-canvas">
       <header className="flex items-center justify-between px-6 py-5 sm:px-10">
         <p className="font-display text-xl font-extrabold tracking-tight bg-gradient-to-r from-ink-navy via-brass to-brass-light bg-clip-text text-transparent">
-          Smart Campus
+          VIT-AP Smart Campus
         </p>
         <div className="flex items-center gap-3">
           <Link
@@ -41,11 +41,11 @@ export function LandingPage(): React.JSX.Element {
 
       <section className="mx-auto max-w-3xl px-6 pt-10 pb-16 text-center sm:pt-16">
         <h1 className="font-display text-3xl font-extrabold tracking-tight text-text-primary sm:text-5xl">
-          One platform for your entire campus
+          One platform for the VIT-AP campus
         </h1>
         <p className="mt-4 font-body text-base text-text-secondary sm:text-lg">
           Bookings, hostel complaints, maintenance, attendance, events, and more — built for
-          students, faculty, maintenance staff, hostel wardens, and administrators alike.
+          VIT-AP students, faculty, maintenance staff, hostel wardens, and administrators alike.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Link to="/register" className={PRIMARY_LINK_CLASS}>
@@ -82,7 +82,7 @@ export function LandingPage(): React.JSX.Element {
       </section>
 
       <footer className="border-t border-card-border px-6 py-8 text-center font-body text-xs text-text-secondary">
-        Smart Campus Infrastructure Platform
+        VIT-AP Smart Campus Infrastructure Platform
       </footer>
     </main>
   );

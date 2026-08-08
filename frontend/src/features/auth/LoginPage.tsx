@@ -42,7 +42,7 @@ export function LoginPage(): React.JSX.Element {
   };
 
   return (
-    <AuthLayout title="Sign in" subtitle="Smart Campus Infrastructure Platform">
+    <AuthLayout title="Sign in" subtitle="VIT-AP Smart Campus Infrastructure Platform">
       <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)} noValidate>
         {formError && (
           <div

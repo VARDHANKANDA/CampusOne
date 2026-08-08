@@ -80,6 +80,11 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
     setStatus("authenticated");
   }, []);
 
+  const refreshProfile = useCallback(async (): Promise<void> => {
+    const profile = await fetchProfile();
+    setUser(profile);
+  }, []);
+
   const logout = useCallback(async (): Promise<void> => {
     try {
       await apiClient.post("/auth/logout");
@@ -91,8 +96,8 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
   }, []);
 
   const value = useMemo(
-    () => ({ user, status, login, register, completeOAuthLogin, logout }),
-    [user, status, login, register, completeOAuthLogin, logout],
+    () => ({ user, status, login, register, completeOAuthLogin, refreshProfile, logout }),
+    [user, status, login, register, completeOAuthLogin, refreshProfile, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

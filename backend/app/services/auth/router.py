@@ -21,8 +21,10 @@ from app.core.security import CurrentUser, VerifiedClaims, get_current_user, get
 from app.core.supabase import get_supabase_client
 from app.models.user import Role, User
 from app.services.auth.schemas import (
+    ChangePasswordRequest,
     LoginRequest,
     PasswordResetRequest,
+    ProfileUpdateRequest,
     RegisterRequest,
     TokenResponse,
     UserProfile,
@@ -165,3 +167,53 @@ def me(current_user: CurrentUser = Depends(get_current_user)) -> UserProfile:
         department=current_user.department,
         is_active=True,
     )
+
+
+@router.patch("/me", response_model=UserProfile)
+def update_me(
+    payload: ProfileUpdateRequest,
+    current_user: CurrentUser = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> UserProfile:
+    """Self-service profile editing. Deliberately narrower than admin's
+    `PATCH /users/{id}` — a user can rename themselves or change their own
+    department, never their own role or active status.
+    """
+    user = db.get(User, current_user.id)
+    if user is None:
+        raise UnauthorizedError("Account not found or deactivated.")
+
+    for field, value in payload.model_dump(exclude_unset=True).items():
+        setattr(user, field, value)
+    db.commit()
+    db.refresh(user)
+    return UserProfile.model_validate(user)
+
+
+@router.post("/change-password", status_code=status.HTTP_204_NO_CONTENT)
+def change_password(
+    payload: ChangePasswordRequest, current_user: CurrentUser = Depends(get_current_user)
+) -> None:
+    # Deliberately two separate clients: sign_in_with_password mutates the
+    # calling client's own internal session, so a client that's already done
+    # a user sign-in switches its Authorization header to that user's token
+    # on subsequent calls — the admin.update_user_by_id call below would then
+    # run as that user (403 "User not allowed") instead of as service_role.
+    try:
+        get_supabase_client().auth.sign_in_with_password(
+            {"email": current_user.email, "password": payload.current_password}
+        )
+    except Exception as exc:
+        raise UnauthorizedError("Current password is incorrect.") from exc
+
+    try:
+        get_supabase_client().auth.admin.update_user_by_id(
+            str(current_user.id), {"password": payload.new_password}
+        )
+    except Exception as exc:
+        logger.exception("Failed to update password for %s", current_user.id)
+        raise AppError(
+            code="PASSWORD_UPDATE_FAILED",
+            message="Could not update your password. Try again.",
+            status_code=status.HTTP_400_BAD_REQUEST,
+        ) from exc
