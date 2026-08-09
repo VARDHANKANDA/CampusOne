@@ -8,18 +8,20 @@ import type {
   MaintenanceStaffUser,
 } from "@/features/complaint/types";
 
-export function useMyComplaints() {
+export function useMyComplaints(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: ["complaints", "mine"],
     queryFn: async () => (await apiClient.get<Complaint[]>("/complaints")).data,
+    enabled: options?.enabled,
   });
 }
 
-export function useComplaintQueue(status?: string) {
+export function useComplaintQueue(status?: string, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: ["complaints", "queue", status],
     queryFn: async () =>
       (await apiClient.get<Complaint[]>("/complaints", { params: { status_filter: status } })).data,
+    enabled: options?.enabled,
   });
 }
 

@@ -12,10 +12,11 @@ export function useAvailableEquipment() {
   });
 }
 
-export function useAllEquipment() {
+export function useAllEquipment(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: ["equipment", "all"],
     queryFn: async () => (await apiClient.get<Equipment[]>("/equipment")).data,
+    enabled: options?.enabled,
   });
 }
 

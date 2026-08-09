@@ -58,6 +58,14 @@ export function RegisterPage(): React.JSX.Element {
 
   return (
     <AuthLayout title="Create account" subtitle="Registers as a student account">
+      <div className="mb-4 rounded-plaque border border-ink-navy/20 bg-ink-navy/5 px-3 py-2.5 text-xs text-text-secondary dark:border-brass/20 dark:bg-brass/5">
+        This form always creates a <strong className="text-text-primary">Student</strong> account — there's
+        no way to pick a different role here. If you need Faculty, Hostel Warden, Maintenance
+        Staff, or Admin access, sign up as a student first and ask your administrator to update
+        your role afterward from the Admin panel. (The field below is your academic/work{" "}
+        <strong className="text-text-primary">department</strong>, e.g. "Computer Science" — not
+        your role.)
+      </div>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)} noValidate>
         {formError && (
           <div
@@ -90,6 +98,7 @@ export function RegisterPage(): React.JSX.Element {
         <PasswordStrengthMeter password={passwordValue} />
         <TextField
           label="Department (optional)"
+          placeholder="e.g. Computer Science — not your role"
           error={errors.department?.message}
           {...register("department")}
         />

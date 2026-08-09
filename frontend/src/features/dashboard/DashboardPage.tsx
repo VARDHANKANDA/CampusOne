@@ -20,15 +20,21 @@ export function DashboardPage(): React.JSX.Element {
   const approveBooking = useApproveBooking();
   const rejectBooking = useRejectBooking();
 
-  // 1. Role-specific query hooks loading real database data — always called
-  // unconditionally (Rules of Hooks) even though only one role's data is
-  // ever rendered; the early `!user` return below must come after these.
-  const studentComplaints = useMyComplaints();
-  const facultyBookings = useMyBookings();
-  const wardenQueue = useComplaintQueue("submitted");
-  const technicianTasks = useMyMaintenanceTasks();
-  const adminPendingBookings = usePendingBookings();
-  const allEquipment = useAllEquipment();
+  // 1. Role-specific query hooks — always called unconditionally (Rules of
+  // Hooks) even though only one role's data is ever rendered, but each is
+  // `enabled` only for the role it actually applies to. Without that, every
+  // role fired all six requests on every dashboard load and ate a 403 on the
+  // five that weren't theirs — harmless to correctness (TanStack Query just
+  // parks the failed ones), but noisy in the console/network tab and wasted
+  // requests on every load. `user?.role` is safe here even though the
+  // `!user` guard hasn't run yet — `enabled` only gates whether the query
+  // fires, it doesn't need `user` to be non-null upfront.
+  const studentComplaints = useMyComplaints({ enabled: user?.role === "student" });
+  const facultyBookings = useMyBookings({ enabled: user?.role === "faculty" });
+  const wardenQueue = useComplaintQueue("submitted", { enabled: user?.role === "warden" });
+  const technicianTasks = useMyMaintenanceTasks({ enabled: user?.role === "maintenance_staff" });
+  const adminPendingBookings = usePendingBookings({ enabled: user?.role === "admin" });
+  const allEquipment = useAllEquipment({ enabled: user?.role === "admin" });
 
   if (!user) return <></>;
 

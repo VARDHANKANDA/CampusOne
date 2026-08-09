@@ -3,10 +3,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/core/api/client";
 import type { MaintenanceRequest, MaintenanceRequestStatus } from "@/features/maintenance/types";
 
-export function useMyMaintenanceTasks() {
+export function useMyMaintenanceTasks(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: ["maintenance-requests", "mine"],
     queryFn: async () => (await apiClient.get<MaintenanceRequest[]>("/maintenance-requests")).data,
+    enabled: options?.enabled,
   });
 }
 

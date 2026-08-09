@@ -20,10 +20,11 @@ export function useAvailability(params: AvailabilityParams | null) {
   });
 }
 
-export function useMyBookings() {
+export function useMyBookings(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: ["bookings", "mine"],
     queryFn: async () => (await apiClient.get<Booking[]>("/bookings")).data,
+    enabled: options?.enabled,
   });
 }
 
@@ -59,11 +60,12 @@ export function useCancelBooking() {
   });
 }
 
-export function usePendingBookings() {
+export function usePendingBookings(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: ["bookings", "pending"],
     queryFn: async () =>
       (await apiClient.get<Booking[]>("/bookings", { params: { status: "pending" } })).data,
+    enabled: options?.enabled,
   });
 }
 
