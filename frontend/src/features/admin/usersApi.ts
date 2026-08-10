@@ -8,6 +8,7 @@ export interface AdminUser {
   email: string;
   full_name: string;
   role: Role;
+  requested_role: Role | null;
   department: string | null;
   is_active: boolean;
 }
@@ -66,6 +67,28 @@ export function useCreateUser() {
   return useMutation({
     mutationFn: async (input: CreateUserInput) =>
       (await apiClient.post<AdminUser>("/users", input)).data,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+    },
+  });
+}
+
+export function useApproveRoleRequest() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (userId: string) =>
+      (await apiClient.post<AdminUser>(`/users/${userId}/approve-role`)).data,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+    },
+  });
+}
+
+export function useRejectRoleRequest() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (userId: string) =>
+      (await apiClient.post<AdminUser>(`/users/${userId}/reject-role`)).data,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
     },

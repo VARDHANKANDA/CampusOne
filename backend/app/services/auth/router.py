@@ -3,11 +3,13 @@ Supabase Auth (docs/SECURITY.md §1) — this router never hashes/stores a passw
 it only calls the Supabase Admin SDK and mirrors the resulting identity into our
 own `users` table so the rest of the app has a role to authorize against.
 
-Self-registration always creates a `student` account — the only role with no
-elevated campus-operations privileges. Every other role (faculty, warden,
-maintenance_staff, admin) is assigned exclusively by an admin via
-`PATCH /users/{id}` (Module 14 — Admin Panel), never self-selected at signup.
-This is an explicit security decision, not an oversight (docs/DECISIONS.md ADR-010).
+Self-registration always creates a `student` account — the only role granted
+without review. A registrant may pick a different role on the form, but that
+only records `requested_role`; it never becomes the account's actual `role`
+until an admin approves it (`POST /users/{id}/approve-role`, Module 14 — Admin
+Panel) or an admin assigns a role directly (`PATCH /users/{id}`). This is an
+explicit security decision, not an oversight (docs/DECISIONS.md ADR-010) — no
+request body field is ever trusted to grant elevated access by itself.
 """
 
 import logging
@@ -62,6 +64,9 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)) -> UserPro
         email=payload.email,
         full_name=payload.full_name,
         role=Role.STUDENT,
+        # Only recorded as a pending request, never applied directly — an
+        # admin must approve it (POST /users/{id}/approve-role) first.
+        requested_role=payload.requested_role if payload.requested_role != Role.STUDENT else None,
         department=payload.department,
     )
     db.add(user)
@@ -164,6 +169,7 @@ def me(current_user: CurrentUser = Depends(get_current_user)) -> UserProfile:
         email=current_user.email,
         full_name=current_user.full_name,
         role=current_user.role,
+        requested_role=current_user.requested_role,
         department=current_user.department,
         is_active=True,
     )

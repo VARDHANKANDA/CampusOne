@@ -6,6 +6,10 @@ export interface UserProfile {
   email: string;
   full_name: string;
   role: Role;
+  /** Set when the user picked a non-Student role at registration and it's
+   * still awaiting admin approval (POST /users/{id}/approve-role) — `role`
+   * itself stays Student until then. */
+  requested_role: Role | null;
   department: string | null;
   is_active: boolean;
 }
@@ -15,4 +19,5 @@ export interface RegisterInput {
   password: string;
   full_name: string;
   department?: string;
+  requested_role: Role;
 }

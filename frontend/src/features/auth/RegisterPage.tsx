@@ -9,14 +9,19 @@ import { PasswordStrengthMeter } from "@/components/ui/PasswordStrengthMeter";
 import { TextField } from "@/components/ui/TextField";
 import { useAuth } from "@/core/auth/useAuth";
 import { ApiError } from "@/core/api/types";
+import type { Role } from "@/core/auth/types";
 import { passwordMeetsAllRules } from "@/core/validation/password";
 import { AuthLayout } from "@/features/auth/AuthLayout";
 import { OAuthButtons } from "@/features/auth/OAuthButtons";
+import { ROLE_LABEL } from "@/routes/navigation";
+
+const SELECTABLE_ROLES: Role[] = ["student", "faculty", "warden", "maintenance_staff", "admin"];
 
 // Mirrors the backend Pydantic RegisterRequest shape and password validator
-// exactly (backend/app/services/auth/schemas.py) — no role field, since
-// self-registration always creates a student account (ADR-010); every other
-// role is admin-provisioned.
+// exactly (backend/app/services/auth/schemas.py). `requested_role` never
+// grants access by itself — the account's actual `role` always starts as
+// Student (ADR-010); anything else picked here only records a pending
+// request an admin must approve.
 const schema = z.object({
   full_name: z.string().min(1, "Full name is required").max(200),
   email: z.string().min(1, "Email is required").email("Enter a valid email address"),
@@ -26,6 +31,7 @@ const schema = z.object({
     .max(72, "Password must be at most 72 characters")
     .refine(passwordMeetsAllRules, "Password doesn't meet all the requirements below"),
   department: z.string().optional(),
+  requested_role: z.enum(["student", "faculty", "warden", "maintenance_staff", "admin"]),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -40,9 +46,14 @@ export function RegisterPage(): React.JSX.Element {
     handleSubmit,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm<FormValues>({ resolver: zodResolver(schema) });
+  } = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { requested_role: "student" },
+  });
 
   const passwordValue = watch("password") ?? "";
+  const requestedRoleValue = watch("requested_role");
+  const requestsElevatedRole = requestedRoleValue !== "student";
 
   const onSubmit = async (values: FormValues): Promise<void> => {
     setFormError(null);
@@ -57,14 +68,13 @@ export function RegisterPage(): React.JSX.Element {
   };
 
   return (
-    <AuthLayout title="Create account" subtitle="Registers as a student account">
+    <AuthLayout title="Create account" subtitle="Choose your role below">
       <div className="mb-4 rounded-plaque border border-ink-navy/20 bg-ink-navy/5 px-3 py-2.5 text-xs text-text-secondary dark:border-brass/20 dark:bg-brass/5">
-        This form always creates a <strong className="text-text-primary">Student</strong> account — there's
-        no way to pick a different role here. If you need Faculty, Hostel Warden, Maintenance
-        Staff, or Admin access, sign up as a student first and ask your administrator to update
-        your role afterward from the Admin panel. (The field below is your academic/work{" "}
-        <strong className="text-text-primary">department</strong>, e.g. "Computer Science" — not
-        your role.)
+        Picking anything other than <strong className="text-text-primary">Student</strong> creates
+        a <strong className="text-text-primary">request</strong> — you'll be signed up as a
+        student immediately, and an administrator has to approve the request before your account
+        actually gets that role. (The department field further down is your academic/work
+        department, e.g. "Computer Science" — not your role.)
       </div>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)} noValidate>
         {formError && (
@@ -96,6 +106,31 @@ export function RegisterPage(): React.JSX.Element {
           {...register("password")}
         />
         <PasswordStrengthMeter password={passwordValue} />
+        <div className="flex flex-col gap-1">
+          <label
+            htmlFor="register-requested-role"
+            className="font-body text-xs font-semibold tracking-wide uppercase text-text-secondary/90"
+          >
+            Role
+          </label>
+          <select
+            id="register-requested-role"
+            className="rounded-plaque border border-card-border bg-card-bg px-3.5 py-2 font-body text-sm text-text-primary transition-all duration-200 hover:border-slate-300 dark:hover:border-slate-700 focus:border-ink-navy focus:outline-none focus:ring-4 focus:ring-ink-navy/15"
+            {...register("requested_role")}
+          >
+            {SELECTABLE_ROLES.map((role) => (
+              <option key={role} value={role}>
+                {ROLE_LABEL[role]}
+              </option>
+            ))}
+          </select>
+          {requestsElevatedRole && (
+            <p className="mt-1 font-body text-xs text-brass">
+              You'll start as a Student. An admin needs to approve this request before you get{" "}
+              {ROLE_LABEL[requestedRoleValue]} access.
+            </p>
+          )}
+        </div>
         <TextField
           label="Department (optional)"
           placeholder="e.g. Computer Science — not your role"

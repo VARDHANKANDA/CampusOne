@@ -31,6 +31,7 @@ class CurrentUser:
     id: UUID
     email: str
     role: Role
+    requested_role: Role | None
     full_name: str
     department: str | None
 
@@ -113,6 +114,7 @@ def get_current_user(
         id=user.id,
         email=user.email,
         role=user.role,
+        requested_role=user.requested_role,
         full_name=user.full_name,
         department=user.department,
     )

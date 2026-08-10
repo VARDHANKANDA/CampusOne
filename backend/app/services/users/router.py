@@ -16,6 +16,7 @@ from app.core.security import CurrentUser, get_current_user, require_role
 from app.core.supabase import get_supabase_client
 from app.models.user import Role, User
 from app.services.audit.service import record_audit_log
+from app.services.notification.service import queue_notification
 from app.services.users.schemas import UserCreate, UserOut, UserUpdate
 
 logger = logging.getLogger(__name__)
@@ -77,8 +78,13 @@ def update_user(
         raise NotFoundError("User not found")
 
     before = UserOut.model_validate(user).model_dump(mode="json")
-    for field, value in payload.model_dump(exclude_unset=True).items():
+    updated_fields = payload.model_dump(exclude_unset=True)
+    for field, value in updated_fields.items():
         setattr(user, field, value)
+    if "role" in updated_fields:
+        # A manually-assigned role resolves any pending self-service request,
+        # whether it matches what was requested or not.
+        user.requested_role = None
     db.commit()
     db.refresh(user)
 
@@ -90,6 +96,93 @@ def update_user(
         user.id,
         before_state=before,
         after_state=UserOut.model_validate(user).model_dump(mode="json"),
+    )
+    return user
+
+
+@router.post("/{user_id}/approve-role", response_model=UserOut)
+def approve_role_request(
+    user_id: UUID,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+    current_user: CurrentUser = Depends(require_role(Role.ADMIN)),
+) -> User:
+    """Grants a user's self-requested role from registration (docs/DECISIONS.md
+    ADR-010's approval flow) — the only other way a non-student role is ever
+    assigned besides an admin setting it directly via `PATCH /users/{id}`.
+    """
+    user = db.get(User, user_id)
+    if user is None:
+        raise NotFoundError("User not found")
+    if user.requested_role is None:
+        raise AppError(
+            code="NO_PENDING_ROLE_REQUEST",
+            message="This user has no pending role request.",
+            status_code=400,
+        )
+
+    before = UserOut.model_validate(user).model_dump(mode="json")
+    granted_role = user.requested_role
+    user.role = granted_role
+    user.requested_role = None
+    db.commit()
+    db.refresh(user)
+
+    background_tasks.add_task(
+        record_audit_log,
+        current_user.id,
+        "user.role_request_approved",
+        "user",
+        user.id,
+        before_state=before,
+        after_state=UserOut.model_validate(user).model_dump(mode="json"),
+    )
+    background_tasks.add_task(
+        queue_notification,
+        user.id,
+        "role_request_approved",
+        {"role": granted_role.value},
+    )
+    return user
+
+
+@router.post("/{user_id}/reject-role", response_model=UserOut)
+def reject_role_request(
+    user_id: UUID,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+    current_user: CurrentUser = Depends(require_role(Role.ADMIN)),
+) -> User:
+    user = db.get(User, user_id)
+    if user is None:
+        raise NotFoundError("User not found")
+    if user.requested_role is None:
+        raise AppError(
+            code="NO_PENDING_ROLE_REQUEST",
+            message="This user has no pending role request.",
+            status_code=400,
+        )
+
+    before = UserOut.model_validate(user).model_dump(mode="json")
+    rejected_role = user.requested_role
+    user.requested_role = None
+    db.commit()
+    db.refresh(user)
+
+    background_tasks.add_task(
+        record_audit_log,
+        current_user.id,
+        "user.role_request_rejected",
+        "user",
+        user.id,
+        before_state=before,
+        after_state=UserOut.model_validate(user).model_dump(mode="json"),
+    )
+    background_tasks.add_task(
+        queue_notification,
+        user.id,
+        "role_request_rejected",
+        {"role": rejected_role.value},
     )
     return user
 

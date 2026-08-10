@@ -11,6 +11,7 @@ class UserOut(BaseModel):
     email: str
     full_name: str
     role: Role
+    requested_role: Role | None = None
     department: str | None
     is_active: bool
 

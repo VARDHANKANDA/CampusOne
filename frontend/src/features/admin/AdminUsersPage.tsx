@@ -5,8 +5,16 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { TextField } from "@/components/ui/TextField";
 import { ApiError } from "@/core/api/types";
 import type { Role } from "@/core/auth/types";
-import { useAllUsers, useDeactivateUser, useUpdateUser, useCreateUser } from "@/features/admin/usersApi";
+import {
+  useAllUsers,
+  useApproveRoleRequest,
+  useDeactivateUser,
+  useRejectRoleRequest,
+  useUpdateUser,
+  useCreateUser,
+} from "@/features/admin/usersApi";
 import { exportToCSV } from "@/utils/export";
+import { ROLE_LABEL } from "@/routes/navigation";
 
 const ROLES: Role[] = ["student", "faculty", "warden", "maintenance_staff", "admin"];
 
@@ -16,6 +24,10 @@ export function AdminUsersPage(): React.JSX.Element {
   const updateUser = useUpdateUser();
   const deactivateUser = useDeactivateUser();
   const createUser = useCreateUser();
+  const approveRoleRequest = useApproveRoleRequest();
+  const rejectRoleRequest = useRejectRoleRequest();
+
+  const pendingRequestCount = users?.filter((u) => u.requested_role !== null).length ?? 0;
 
   // Create User Modal States
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -87,6 +99,13 @@ export function AdminUsersPage(): React.JSX.Element {
         </div>
       </div>
 
+      {pendingRequestCount > 0 && (
+        <div className="rounded-plaque border border-brass/30 bg-brass/10 px-4 py-2.5 font-body text-xs font-semibold text-text-primary">
+          {pendingRequestCount} pending role {pendingRequestCount === 1 ? "request" : "requests"} —
+          look for the badge in the System Role column below.
+        </div>
+      )}
+
       {/* Filter Options bar */}
       <div className="flex justify-between items-center bg-card-bg border border-card-border p-4 rounded-plaque">
         <label className="flex items-center gap-2 cursor-pointer font-body text-xs font-semibold text-text-primary">
@@ -122,19 +141,49 @@ export function AdminUsersPage(): React.JSX.Element {
                   <td className="px-5 py-3.5 font-bold text-text-primary">{user.full_name}</td>
                   <td className="px-5 py-3.5 text-slate">{user.email}</td>
                   <td className="px-5 py-3.5">
-                    <select
-                      className="rounded-plaque border border-card-border bg-canvas px-2.5 py-1 text-xs text-text-primary font-semibold outline-none focus:ring-1 focus:ring-brass"
-                      value={user.role}
-                      onChange={(e) =>
-                        updateUser.mutate({ userId: user.id, role: e.target.value as Role })
-                      }
-                    >
-                      {ROLES.map((r) => (
-                        <option key={r} value={r}>
-                          {r.replace("_", " ")}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="flex flex-col gap-1.5">
+                      <select
+                        className="rounded-plaque border border-card-border bg-canvas px-2.5 py-1 text-xs text-text-primary font-semibold outline-none focus:ring-1 focus:ring-brass"
+                        value={user.role}
+                        onChange={(e) =>
+                          updateUser.mutate({ userId: user.id, role: e.target.value as Role })
+                        }
+                      >
+                        {ROLES.map((r) => (
+                          <option key={r} value={r}>
+                            {r.replace("_", " ")}
+                          </option>
+                        ))}
+                      </select>
+                      {user.requested_role && (
+                        <div className="flex items-center gap-1.5 rounded-plaque border border-brass/30 bg-brass/10 px-2 py-1">
+                          <span className="font-body text-[10px] font-semibold text-text-primary">
+                            Wants {ROLE_LABEL[user.requested_role]}
+                          </span>
+                          <button
+                            type="button"
+                            disabled={
+                              approveRoleRequest.isPending &&
+                              approveRoleRequest.variables === user.id
+                            }
+                            onClick={() => approveRoleRequest.mutate(user.id)}
+                            className="font-body text-[10px] font-bold text-quad-green hover:underline disabled:opacity-50"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            type="button"
+                            disabled={
+                              rejectRoleRequest.isPending && rejectRoleRequest.variables === user.id
+                            }
+                            onClick={() => rejectRoleRequest.mutate(user.id)}
+                            className="font-body text-[10px] font-bold text-brick hover:underline disabled:opacity-50"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </td>
                   <td className="px-5 py-3.5 text-slate">{user.department ?? "—"}</td>
                   <td className="px-5 py-3.5">

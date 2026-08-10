@@ -14,6 +14,12 @@ class Role(str, enum.Enum):
     ADMIN = "admin"
 
 
+# Shared instance (not a fresh pg_enum() call per column) so SQLAlchemy treats
+# `role` and `requested_role` as the same underlying Postgres ENUM type rather
+# than trying to CREATE TYPE "user_role" twice.
+_USER_ROLE_TYPE = pg_enum(Role, name="user_role")
+
+
 class User(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     """Mirrors the Supabase Auth user by id (docs/DATABASE.md §2.1)."""
 
@@ -21,6 +27,10 @@ class User(UUIDPrimaryKeyMixin, TimestampMixin, Base):
 
     email: Mapped[str] = mapped_column(String, unique=True, nullable=False, index=True)
     full_name: Mapped[str] = mapped_column(String, nullable=False)
-    role: Mapped[Role] = mapped_column(pg_enum(Role, name="user_role"), nullable=False)
+    role: Mapped[Role] = mapped_column(_USER_ROLE_TYPE, nullable=False)
+    # Set at registration when the user picks anything other than Student;
+    # `role` itself always starts as Student regardless — this only takes
+    # effect once an admin approves it (POST /users/{id}/approve-role).
+    requested_role: Mapped[Role | None] = mapped_column(_USER_ROLE_TYPE, nullable=True)
     department: Mapped[str | None] = mapped_column(String, nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)

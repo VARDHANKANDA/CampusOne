@@ -108,9 +108,21 @@ export function ProfilePage(): React.JSX.Element {
             <span className="font-body text-xs font-semibold uppercase tracking-wide text-text-secondary/90">
               Role
             </span>
-            <div>
+            <div className="flex items-center gap-2">
               <StatusBadge label={ROLE_LABEL[user.role]} tone="success" />
+              {user.requested_role && (
+                <StatusBadge
+                  label={`${ROLE_LABEL[user.requested_role]} request pending`}
+                  tone="pending"
+                />
+              )}
             </div>
+            {user.requested_role && (
+              <p className="mt-1 font-body text-xs text-text-secondary">
+                An administrator needs to approve this before your account becomes{" "}
+                {ROLE_LABEL[user.requested_role]}.
+              </p>
+            )}
           </div>
 
           <form

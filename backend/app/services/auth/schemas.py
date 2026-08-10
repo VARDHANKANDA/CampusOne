@@ -39,6 +39,11 @@ class RegisterRequest(BaseModel):
     password: str = Field(min_length=8, max_length=72)
     full_name: str = Field(min_length=1, max_length=200)
     department: str | None = None
+    # The account's actual `role` always starts as Student regardless of this
+    # (ADR-010) — picking anything else here only records a pending request
+    # an admin must approve (POST /users/{id}/approve-role) before it takes
+    # effect. Never trust this field to grant access by itself.
+    requested_role: Role = Role.STUDENT
 
     _normalize_email = field_validator("email")(_normalize_email)
 
@@ -92,6 +97,7 @@ class UserProfile(BaseModel):
     email: str
     full_name: str
     role: Role
+    requested_role: Role | None = None
     department: str | None
     is_active: bool
 
