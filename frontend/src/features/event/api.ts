@@ -77,4 +77,3 @@ export function useAttendees(eventId: string | null) {
     enabled: eventId !== null,
   });
 }
-

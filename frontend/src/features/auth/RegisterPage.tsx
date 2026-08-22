@@ -70,11 +70,11 @@ export function RegisterPage(): React.JSX.Element {
   return (
     <AuthLayout title="Create account" subtitle="Choose your role below">
       <div className="mb-4 rounded-plaque border border-ink-navy/20 bg-ink-navy/5 px-3 py-2.5 text-xs text-text-secondary dark:border-brass/20 dark:bg-brass/5">
-        Picking anything other than <strong className="text-text-primary">Student</strong> creates
-        a <strong className="text-text-primary">request</strong> — you'll be signed up as a
-        student immediately, and an administrator has to approve the request before your account
-        actually gets that role. (The department field further down is your academic/work
-        department, e.g. "Computer Science" — not your role.)
+        Picking anything other than <strong className="text-text-primary">Student</strong> creates a{" "}
+        <strong className="text-text-primary">request</strong> — you'll be signed up as a student
+        immediately, and an administrator has to approve the request before your account actually
+        gets that role. (The department field further down is your academic/work department, e.g.
+        "Computer Science" — not your role.)
       </div>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)} noValidate>
         {formError && (
@@ -146,7 +146,10 @@ export function RegisterPage(): React.JSX.Element {
       </div>
       <p className="mt-6 font-body text-sm text-text-secondary">
         Already have an account?{" "}
-        <Link to="/login" className="font-semibold text-ink-navy hover:underline transition-colors duration-200">
+        <Link
+          to="/login"
+          className="font-semibold text-ink-navy hover:underline transition-colors duration-200"
+        >
           Sign in
         </Link>
       </p>

@@ -59,14 +59,18 @@ export function AppShell({ children }: { children: ReactNode }): React.JSX.Eleme
   return (
     <div className="flex min-h-screen bg-canvas text-text-primary transition-colors duration-200">
       <CommandPalette />
-      
+
       {/* Sidebar Navigation */}
       <aside className="flex w-64 flex-col border-r border-card-border bg-card-bg text-text-primary">
         <div className="px-6 py-6 border-b border-card-border">
-          <p className="font-display text-xl font-extrabold tracking-tight bg-gradient-to-r from-ink-navy via-ink-navy to-brass bg-clip-text text-transparent">CampusOne</p>
-          <p className="font-body text-[10px] font-bold text-text-secondary uppercase tracking-widest bg-card-bg px-2.5 py-1 rounded-full w-max mt-2 border border-card-border">{ROLE_LABEL[user.role]}</p>
+          <p className="font-display text-xl font-extrabold tracking-tight bg-gradient-to-r from-ink-navy via-ink-navy to-brass bg-clip-text text-transparent">
+            CampusOne
+          </p>
+          <p className="font-body text-[10px] font-bold text-text-secondary uppercase tracking-widest bg-card-bg px-2.5 py-1 rounded-full w-max mt-2 border border-card-border">
+            {ROLE_LABEL[user.role]}
+          </p>
         </div>
-        
+
         <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
           {navItems.map((item) => (
             <NavLink
@@ -92,7 +96,9 @@ export function AppShell({ children }: { children: ReactNode }): React.JSX.Eleme
             <p className="truncate font-body text-xs font-bold text-text-primary group-hover:text-ink-navy dark:group-hover:text-brass transition-colors duration-200">
               {user.full_name || user.email}
             </p>
-            <p className="saas-interactive truncate font-body text-[10px] text-text-secondary">{user.email}</p>
+            <p className="saas-interactive truncate font-body text-[10px] text-text-secondary">
+              {user.email}
+            </p>
           </Link>
           <div className="mt-2 flex items-center gap-3">
             <Link
@@ -116,15 +122,25 @@ export function AppShell({ children }: { children: ReactNode }): React.JSX.Eleme
         {/* Top Header */}
         <header className="flex h-16 items-center justify-between border-b border-card-border bg-card-bg/30 backdrop-blur-md px-8 flex-shrink-0">
           {/* Breadcrumbs Wayfinding */}
-          <nav className="flex items-center gap-2 text-xs text-text-secondary" aria-label="Breadcrumb">
-            <Link to="/" className="hover:text-ink-navy transition-colors duration-200 font-medium">Home</Link>
+          <nav
+            className="flex items-center gap-2 text-xs text-text-secondary"
+            aria-label="Breadcrumb"
+          >
+            <Link to="/" className="hover:text-ink-navy transition-colors duration-200 font-medium">
+              Home
+            </Link>
             {breadcrumbs.map((bc) => (
               <span key={bc.url} className="flex items-center gap-2">
                 <span className="text-slate-400 dark:text-slate-600 font-light">/</span>
                 {bc.isLast ? (
                   <span className="font-bold text-text-primary">{bc.label}</span>
                 ) : (
-                  <Link to={bc.url} className="hover:text-ink-navy transition-colors duration-200 font-medium">{bc.label}</Link>
+                  <Link
+                    to={bc.url}
+                    className="hover:text-ink-navy transition-colors duration-200 font-medium"
+                  >
+                    {bc.label}
+                  </Link>
                 )}
               </span>
             ))}
@@ -144,11 +160,23 @@ export function AppShell({ children }: { children: ReactNode }): React.JSX.Eleme
               }}
               className="flex items-center gap-3 rounded-plaque border border-card-border bg-card-bg/40 px-3.5 py-2 text-xs text-text-secondary hover:bg-card-bg hover:border-slate-350 dark:hover:border-slate-750 shadow-sm transition-all duration-200"
             >
-              <svg className="h-3.5 w-3.5 text-text-secondary/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <svg
+                className="h-3.5 w-3.5 text-text-secondary/70"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2.5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
               <span>Search...</span>
-              <kbd className="rounded bg-slate-200/60 dark:bg-slate-800/80 px-1.5 py-0.5 text-[9px] font-mono text-text-secondary font-bold">Ctrl+K</kbd>
+              <kbd className="rounded bg-slate-200/60 dark:bg-slate-800/80 px-1.5 py-0.5 text-[9px] font-mono text-text-secondary font-bold">
+                Ctrl+K
+              </kbd>
             </button>
 
             {/* Theme Switcher Toggle */}
@@ -158,11 +186,25 @@ export function AppShell({ children }: { children: ReactNode }): React.JSX.Eleme
               aria-label={`Switch to ${theme === "light" ? "dark" : "light"} theme`}
             >
               {theme === "light" ? (
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="16"
+                  height="16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                >
                   <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
                 </svg>
               ) : (
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="16"
+                  height="16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                >
                   <circle cx="12" cy="12" r="5" />
                   <line x1="12" y1="1" x2="12" y2="3" />
                   <line x1="12" y1="21" x2="12" y2="23" />
@@ -186,4 +228,3 @@ export function AppShell({ children }: { children: ReactNode }): React.JSX.Eleme
     </div>
   );
 }
-

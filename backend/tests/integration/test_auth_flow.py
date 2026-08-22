@@ -8,7 +8,7 @@ def _register(client: TestClient, email: str = "student@example.edu") -> dict:
         "/api/v1/auth/register",
         json={
             "email": email,
-            "password": "correct-horse-battery-staple",
+            "password": "Correct-horse-123!",
             "full_name": "Ada Student",
             "department": "Computer Science",
         },
@@ -30,7 +30,7 @@ def test_register_duplicate_email_is_rejected(client: TestClient) -> None:
         "/api/v1/auth/register",
         json={
             "email": "dup@example.edu",
-            "password": "correct-horse-battery-staple",
+            "password": "Correct-horse-123!",
             "full_name": "Second Ada",
         },
     )
@@ -43,7 +43,7 @@ def test_login_then_me_round_trip(client: TestClient) -> None:
 
     login_response = client.post(
         "/api/v1/auth/login",
-        json={"email": "login@example.edu", "password": "correct-horse-battery-staple"},
+        json={"email": "login@example.edu", "password": "Correct-horse-123!"},
     )
     assert login_response.status_code == 200
     token = login_response.json()["access_token"]
@@ -58,7 +58,7 @@ def test_login_with_wrong_password_is_unauthorized(client: TestClient) -> None:
     _register(client, email="wrongpw@example.edu")
     response = client.post(
         "/api/v1/auth/login",
-        json={"email": "wrongpw@example.edu", "password": "not-the-right-password"},
+        json={"email": "wrongpw@example.edu", "password": "Not-the-right-password-123!"},
     )
     assert response.status_code == 401
     assert response.json()["error"]["code"] == "UNAUTHORIZED"
@@ -73,7 +73,7 @@ def test_logout_with_valid_session_succeeds(client: TestClient) -> None:
     _register(client, email="logout@example.edu")
     login_response = client.post(
         "/api/v1/auth/login",
-        json={"email": "logout@example.edu", "password": "correct-horse-battery-staple"},
+        json={"email": "logout@example.edu", "password": "Correct-horse-123!"},
     )
     token = login_response.json()["access_token"]
 

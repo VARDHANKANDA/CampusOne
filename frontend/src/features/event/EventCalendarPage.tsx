@@ -21,7 +21,7 @@ export function EventCalendarPage(): React.JSX.Element {
   // Fetch events for current month scope
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
-  
+
   const fromTime = new Date(year, month, 1).toISOString();
   const toTime = new Date(year, month + 1, 0, 23, 59, 59).toISOString();
 
@@ -55,7 +55,7 @@ export function EventCalendarPage(): React.JSX.Element {
   const getDaysInMonth = () => {
     const startDayOfWeek = new Date(year, month, 1).getDay();
     const totalDays = new Date(year, month + 1, 0).getDate();
-    
+
     const days: (Date | null)[] = Array(startDayOfWeek).fill(null);
     for (let i = 1; i <= totalDays; i++) {
       days.push(new Date(year, month, i));
@@ -67,10 +67,11 @@ export function EventCalendarPage(): React.JSX.Element {
   const selectedDateStr = selectedDate.toISOString().split("T")[0];
 
   // Filter events scheduled on the selected day
-  const eventsOnSelectedDay = events?.filter((e) => {
-    const eDate = new Date(e.start_time).toISOString().split("T")[0];
-    return eDate === selectedDateStr;
-  }) || [];
+  const eventsOnSelectedDay =
+    events?.filter((e) => {
+      const eDate = new Date(e.start_time).toISOString().split("T")[0];
+      return eDate === selectedDateStr;
+    }) || [];
 
   const handleRSVPToggle = () => {
     if (!selectedEventId || !rsvpStatus.data) return;
@@ -88,15 +89,15 @@ export function EventCalendarPage(): React.JSX.Element {
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="font-display text-2xl font-bold text-text-primary">Campus Event Calendar</h1>
-        <p className="font-body text-xs text-slate mt-1">Register for seminars, reserve venue seats, and browse event schedules</p>
+        <p className="font-body text-xs text-slate mt-1">
+          Register for seminars, reserve venue seats, and browse event schedules
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
         {/* Calendar & Event Day List (Left columns) */}
         <div className="lg:col-span-2 space-y-6">
           <div className="rounded-plaque border border-card-border bg-card-bg p-5 shadow-level-1 space-y-4">
-            
             {/* Calendar Controls */}
             <div className="flex justify-between items-center border-b border-card-border pb-3">
               <h2 className="font-display text-base font-bold text-text-primary">
@@ -104,12 +105,24 @@ export function EventCalendarPage(): React.JSX.Element {
               </h2>
               <div className="flex gap-2">
                 <Button variant="secondary" onClick={handlePrevMonth} className="p-2">
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                   </svg>
                 </Button>
                 <Button variant="secondary" onClick={handleNextMonth} className="p-2">
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                   </svg>
                 </Button>
@@ -134,12 +147,14 @@ export function EventCalendarPage(): React.JSX.Element {
               <div className="grid grid-cols-7 gap-1">
                 {daysGrid.map((date, idx) => {
                   if (!date) return <div key={`empty-${idx}`} className="h-12 sm:h-16" />;
-                  
+
                   const dateStr = date.toISOString().split("T")[0];
                   const hasEvents = (events || []).some(
-                    (e) => new Date(e.start_time).toISOString().split("T")[0] === dateStr
+                    (e) => new Date(e.start_time).toISOString().split("T")[0] === dateStr,
                   );
-                  const isSelected = date.getDate() === selectedDate.getDate() && date.getMonth() === selectedDate.getMonth();
+                  const isSelected =
+                    date.getDate() === selectedDate.getDate() &&
+                    date.getMonth() === selectedDate.getMonth();
 
                   return (
                     <button
@@ -179,15 +194,23 @@ export function EventCalendarPage(): React.JSX.Element {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {eventsOnSelectedDay.map((e) => {
                   const venue = rooms?.find((r) => r.id === e.room_id)?.name || "Campus Venue";
-                  const startStr = new Date(e.start_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-                  const endStr = new Date(e.end_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+                  const startStr = new Date(e.start_time).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  });
+                  const endStr = new Date(e.end_time).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  });
 
                   return (
                     <div
                       key={e.id}
                       onClick={() => setSelectedEventId(e.id)}
                       className={`p-4 rounded-plaque border bg-card-bg cursor-pointer transition ${
-                        selectedEventId === e.id ? "border-brass ring-1 ring-brass" : "border-card-border hover:border-brass/50"
+                        selectedEventId === e.id
+                          ? "border-brass ring-1 ring-brass"
+                          : "border-card-border hover:border-brass/50"
                       }`}
                     >
                       <span className="block font-display text-sm font-bold text-text-primary mb-1">
@@ -195,16 +218,38 @@ export function EventCalendarPage(): React.JSX.Element {
                       </span>
                       <div className="flex flex-col gap-1 text-[11px] text-slate">
                         <div className="flex items-center gap-1">
-                          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <svg
+                            className="h-3.5 w-3.5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                            />
                           </svg>
                           <span>{venue}</span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          <svg
+                            className="h-3.5 w-3.5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
                           </svg>
-                          <span>{startStr} – {endStr}</span>
+                          <span>
+                            {startStr} – {endStr}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -219,10 +264,12 @@ export function EventCalendarPage(): React.JSX.Element {
         <div className="lg:col-span-1">
           {selectedEvent ? (
             <div className="rounded-plaque border border-card-border bg-card-bg p-5 shadow-level-2 space-y-6 sticky top-4 animate-in slide-in-from-right-3 duration-200">
-              
               {/* Header */}
               <div className="border-b border-card-border pb-3">
-                <StatusBadge label={selectedEvent.status} tone={selectedEvent.status === "scheduled" ? "success" : "muted"} />
+                <StatusBadge
+                  label={selectedEvent.status}
+                  tone={selectedEvent.status === "scheduled" ? "success" : "muted"}
+                />
                 <h3 className="font-display text-lg font-bold text-text-primary mt-2">
                   {selectedEvent.title}
                 </h3>
@@ -231,15 +278,23 @@ export function EventCalendarPage(): React.JSX.Element {
               {/* Event Metadata */}
               <div className="space-y-3.5 text-xs text-text-primary">
                 <div>
-                  <span className="block text-[10px] text-slate font-bold uppercase tracking-wider mb-0.5">Location Venue</span>
+                  <span className="block text-[10px] text-slate font-bold uppercase tracking-wider mb-0.5">
+                    Location Venue
+                  </span>
                   <span className="font-semibold">
                     {rooms?.find((r) => r.id === selectedEvent.room_id)?.name || "Main Auditorium"}
                   </span>
                 </div>
                 <div>
-                  <span className="block text-[10px] text-slate font-bold uppercase tracking-wider mb-0.5">Timing slot</span>
+                  <span className="block text-[10px] text-slate font-bold uppercase tracking-wider mb-0.5">
+                    Timing slot
+                  </span>
                   <span>
-                    {new Date(selectedEvent.start_time).toLocaleString()} – {new Date(selectedEvent.end_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                    {new Date(selectedEvent.start_time).toLocaleString()} –{" "}
+                    {new Date(selectedEvent.end_time).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </span>
                 </div>
               </div>
@@ -250,7 +305,9 @@ export function EventCalendarPage(): React.JSX.Element {
               ) : (
                 <div className="rounded-plaque border border-card-border bg-canvas/30 p-4 space-y-3.5">
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-text-primary font-semibold">Event Registration</span>
+                    <span className="text-xs text-text-primary font-semibold">
+                      Event Registration
+                    </span>
                     <span className="font-mono text-xs font-bold text-quad-green">
                       {rsvpStatus.data?.rsvp_count || 0} attending
                     </span>
@@ -293,7 +350,9 @@ export function EventCalendarPage(): React.JSX.Element {
                           <tbody className="divide-y divide-card-border text-[11px]">
                             {attendees.data.map((att) => (
                               <tr key={att.id}>
-                                <td className="px-3 py-2 text-text-primary font-semibold">{att.full_name}</td>
+                                <td className="px-3 py-2 text-text-primary font-semibold">
+                                  {att.full_name}
+                                </td>
                                 <td className="px-3 py-2 text-slate">{att.department || "N/A"}</td>
                               </tr>
                             ))}

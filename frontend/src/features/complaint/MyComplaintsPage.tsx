@@ -40,15 +40,24 @@ export function MyComplaintsPage(): React.JSX.Element {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="font-display text-2xl font-bold text-text-primary">My Reported Complaints</h1>
-        <p className="font-body text-xs text-slate mt-1">Track maintenance progress, SLA timelines, and verify repairs</p>
+        <h1 className="font-display text-2xl font-bold text-text-primary">
+          My Reported Complaints
+        </h1>
+        <p className="font-body text-xs text-slate mt-1">
+          Track maintenance progress, SLA timelines, and verify repairs
+        </p>
       </div>
 
       <div className="grid grid-cols-1 gap-6">
         {complaints.map((complaint) => {
           const isExpanded = expandedId === complaint.id;
           const slaText = getRemainingSlaText(complaint.sla_due_at, complaint.status);
-          const isBreached = complaint.sla_breached || (complaint.sla_due_at && new Date(complaint.sla_due_at).getTime() < Date.now() && complaint.status !== "completed" && complaint.status !== "verified");
+          const isBreached =
+            complaint.sla_breached ||
+            (complaint.sla_due_at &&
+              new Date(complaint.sla_due_at).getTime() < Date.now() &&
+              complaint.status !== "completed" &&
+              complaint.status !== "verified");
 
           return (
             <div
@@ -88,7 +97,9 @@ export function MyComplaintsPage(): React.JSX.Element {
                     {slaText && (
                       <span
                         className={`text-[10px] font-mono font-semibold ${
-                          isBreached && complaint.status !== "completed" && complaint.status !== "verified"
+                          isBreached &&
+                          complaint.status !== "completed" &&
+                          complaint.status !== "verified"
                             ? "text-brick"
                             : "text-quad-green"
                         }`}
@@ -114,7 +125,6 @@ export function MyComplaintsPage(): React.JSX.Element {
               {/* Card Expanded Detail Panel */}
               {isExpanded && (
                 <div className="border-t border-card-border bg-canvas/30 p-5 space-y-6 animate-in fade-in duration-150">
-                  
                   {/* Before / After Photos Panel */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
@@ -162,14 +172,18 @@ export function MyComplaintsPage(): React.JSX.Element {
                       </h4>
                       {complaint.feedback && (
                         <p className="font-body text-xs text-text-primary">
-                          <span className="font-semibold text-slate block mb-0.5">Technician Notes:</span>
+                          <span className="font-semibold text-slate block mb-0.5">
+                            Technician Notes:
+                          </span>
                           {complaint.feedback}
                         </p>
                       )}
                       {complaint.cost !== null && (
                         <p className="font-body text-xs text-text-primary">
                           <span className="font-semibold text-slate">Repair Work Cost: </span>
-                          <span className="font-bold text-quad-green">${complaint.cost.toFixed(2)}</span>
+                          <span className="font-bold text-quad-green">
+                            ${complaint.cost.toFixed(2)}
+                          </span>
                         </p>
                       )}
                     </div>
@@ -179,12 +193,23 @@ export function MyComplaintsPage(): React.JSX.Element {
                   {complaint.escalated_to_admin && (
                     <div className="rounded-plaque border border-brick/35 bg-brick/5 p-4 text-xs font-medium text-brick">
                       <div className="flex items-center gap-2 font-bold mb-1">
-                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        <svg
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                          />
                         </svg>
                         <span>SLA Breached</span>
                       </div>
-                      This complaint exceeded its designated SLA due date and has been automatically escalated to administrative WARDENS for rapid review.
+                      This complaint exceeded its designated SLA due date and has been automatically
+                      escalated to administrative WARDENS for rapid review.
                     </div>
                   )}
 
@@ -196,11 +221,14 @@ export function MyComplaintsPage(): React.JSX.Element {
                           Review Technician Repair Completion
                         </h4>
                         <p className="text-xs text-slate mt-0.5">
-                          Please verify if this issue has been fully resolved. Once approved, the ticket will be permanently closed.
+                          Please verify if this issue has been fully resolved. Once approved, the
+                          ticket will be permanently closed.
                         </p>
                       </div>
                       <Button
-                        isLoading={verifyComplaint.isPending && verifyComplaint.variables === complaint.id}
+                        isLoading={
+                          verifyComplaint.isPending && verifyComplaint.variables === complaint.id
+                        }
                         onClick={() => verifyComplaint.mutate(complaint.id)}
                         className="py-2.5 px-6 bg-quad-green hover:bg-quad-green/90 text-white font-bold"
                       >

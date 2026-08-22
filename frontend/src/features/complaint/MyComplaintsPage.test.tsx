@@ -72,6 +72,8 @@ describe("MyComplaintsPage", () => {
     const completedCardHeader = screen.getByText("Flickering light");
     completedCardHeader.click();
 
-    expect(await screen.findByRole("button", { name: /approve & verify resolution/i })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("button", { name: /approve & verify resolution/i }),
+    ).toBeInTheDocument();
   });
 });

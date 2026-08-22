@@ -39,12 +39,14 @@ export function ProfilePage(): React.JSX.Element {
   const updateProfile = useUpdateProfile();
   const changePassword = useChangePassword();
 
-  const [profileMessage, setProfileMessage] = useState<{ kind: "success" | "error"; text: string } | null>(
-    null,
-  );
-  const [passwordMessage, setPasswordMessage] = useState<{ kind: "success" | "error"; text: string } | null>(
-    null,
-  );
+  const [profileMessage, setProfileMessage] = useState<{
+    kind: "success" | "error";
+    text: string;
+  } | null>(null);
+  const [passwordMessage, setPasswordMessage] = useState<{
+    kind: "success" | "error";
+    text: string;
+  } | null>(null);
 
   const profileForm = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),

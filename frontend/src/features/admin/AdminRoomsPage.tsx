@@ -46,10 +46,18 @@ export function AdminRoomsPage(): React.JSX.Element {
     <div className="flex flex-col gap-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="font-display text-2xl font-bold text-text-primary">Buildings &amp; Rooms master data</h1>
-          <p className="font-body text-xs text-slate mt-1">Manage physical infrastructure, classroom registers, and student capacities</p>
+          <h1 className="font-display text-2xl font-bold text-text-primary">
+            Buildings &amp; Rooms master data
+          </h1>
+          <p className="font-body text-xs text-slate mt-1">
+            Manage physical infrastructure, classroom registers, and student capacities
+          </p>
         </div>
-        <Button onClick={handleExportRooms} variant="secondary" className="py-2.5 px-4 font-semibold text-xs self-stretch sm:self-auto">
+        <Button
+          onClick={handleExportRooms}
+          variant="secondary"
+          className="py-2.5 px-4 font-semibold text-xs self-stretch sm:self-auto"
+        >
           Export Rooms CSV
         </Button>
       </div>
@@ -61,10 +69,12 @@ export function AdminRoomsPage(): React.JSX.Element {
             e.preventDefault();
             createBuilding.mutate(
               { name: buildingName, code: buildingCode },
-              { onSuccess: () => {
-                setBuildingName("");
-                setBuildingCode("");
-              } },
+              {
+                onSuccess: () => {
+                  setBuildingName("");
+                  setBuildingCode("");
+                },
+              },
             );
           }}
           className="flex flex-col gap-4 rounded-plaque border border-card-border bg-card-bg p-5 shadow-level-1"
@@ -86,7 +96,11 @@ export function AdminRoomsPage(): React.JSX.Element {
             required
             placeholder="e.g. SCI-A"
           />
-          <Button type="submit" isLoading={createBuilding.isPending} className="w-fit py-2 px-4 mt-1">
+          <Button
+            type="submit"
+            isLoading={createBuilding.isPending}
+            className="w-fit py-2 px-4 mt-1"
+          >
             Create Building
           </Button>
         </form>
@@ -111,7 +125,10 @@ export function AdminRoomsPage(): React.JSX.Element {
             Register New Room / Lab / Venue
           </h2>
           <div className="flex flex-col gap-1">
-            <label htmlFor="room-building" className="font-body text-xs font-semibold text-text-primary">
+            <label
+              htmlFor="room-building"
+              className="font-body text-xs font-semibold text-text-primary"
+            >
               Building Block Location
             </label>
             <select
@@ -139,7 +156,10 @@ export function AdminRoomsPage(): React.JSX.Element {
           />
 
           <div className="flex flex-col gap-1">
-            <label htmlFor="room-type" className="font-body text-xs font-semibold text-text-primary">
+            <label
+              htmlFor="room-type"
+              className="font-body text-xs font-semibold text-text-primary"
+            >
               Room Category / Type
             </label>
             <select

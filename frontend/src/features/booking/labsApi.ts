@@ -51,7 +51,7 @@ export function useJoinWaitlist() {
 export function useOccupiedSeats(
   roomId: string | null,
   start_time: string | null,
-  end_time: string | null
+  end_time: string | null,
 ) {
   return useQuery({
     queryKey: ["labs", roomId, "occupied-seats", start_time, end_time],
@@ -64,4 +64,3 @@ export function useOccupiedSeats(
     enabled: roomId !== null && start_time !== null && end_time !== null,
   });
 }
-

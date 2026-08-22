@@ -4,11 +4,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/Button";
 import { PlaqueCard } from "@/components/ui/PlaqueCard";
 import { TextField } from "@/components/ui/TextField";
-import {
-  useCreateSession,
-  useSessionRecords,
-  useRotateSession,
-} from "@/features/attendance/api";
+import { useCreateSession, useSessionRecords, useRotateSession } from "@/features/attendance/api";
 import type { AttendanceSession } from "@/features/attendance/types";
 
 const ROTATION_INTERVAL_SEC = 15;
@@ -32,7 +28,7 @@ export function GenerateAttendancePage(): React.JSX.Element {
           setActiveSession(session);
           setSecondsLeft(ROTATION_INTERVAL_SEC);
         },
-      }
+      },
     );
   };
 
@@ -64,8 +60,12 @@ export function GenerateAttendancePage(): React.JSX.Element {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="font-display text-2xl font-bold text-text-primary">Generate QR Attendance</h1>
-        <p className="font-body text-xs text-slate mt-1">Start a short-lived class attendance session with rotating secure tokens</p>
+        <h1 className="font-display text-2xl font-bold text-text-primary">
+          Generate QR Attendance
+        </h1>
+        <p className="font-body text-xs text-slate mt-1">
+          Start a short-lived class attendance session with rotating secure tokens
+        </p>
       </div>
 
       <form
@@ -94,10 +94,8 @@ export function GenerateAttendancePage(): React.JSX.Element {
 
       {activeSession && (
         <div className="flex flex-col items-start gap-6 lg:flex-row">
-          
           {/* QR Display Card */}
           <div className="rounded-plaque border border-card-border bg-card-bg p-6 shadow-level-2 text-center w-full max-w-xs space-y-4">
-            
             {/* Visual Rotation Timer Countdown */}
             <div className="space-y-1.5 text-left">
               <div className="flex justify-between items-center text-[10px] font-bold tracking-wider text-slate uppercase">
@@ -117,9 +115,15 @@ export function GenerateAttendancePage(): React.JSX.Element {
             </div>
 
             <div>
-              <p className="font-mono text-sm font-bold text-text-primary">{activeSession.course_code}</p>
+              <p className="font-mono text-sm font-bold text-text-primary">
+                {activeSession.course_code}
+              </p>
               <p className="font-body text-[11px] text-slate mt-1">
-                Expires at {new Date(activeSession.expires_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                Expires at{" "}
+                {new Date(activeSession.expires_at).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </p>
             </div>
           </div>
@@ -129,20 +133,23 @@ export function GenerateAttendancePage(): React.JSX.Element {
             <h2 className="mb-3 font-display text-sm font-bold uppercase tracking-wider text-slate border-b border-card-border pb-1">
               Scanned Registered Students ({records?.length ?? 0})
             </h2>
-            
-            {(!records || records.length === 0) ? (
+
+            {!records || records.length === 0 ? (
               <div className="rounded-plaque border border-dashed border-card-border bg-card-bg/40 p-10 text-center text-xs text-slate">
                 Awaiting student scans. Share the rotating QR code on screen.
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {records.map((record) => (
-                  <div key={record.id} className="rounded-plaque border border-card-border bg-card-bg">
+                  <div
+                    key={record.id}
+                    className="rounded-plaque border border-card-border bg-card-bg"
+                  >
                     <PlaqueCard
                       identifierLabel="Student"
                       identifier={record.student_name}
                       title={record.student_name}
-                      meta={`Scanned at: ${new Date(record.scanned_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`}
+                      meta={`Scanned at: ${new Date(record.scanned_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}`}
                     />
                   </div>
                 ))}

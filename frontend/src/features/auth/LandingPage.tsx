@@ -44,8 +44,8 @@ export function LandingPage(): React.JSX.Element {
           One platform for the VIT-AP campus
         </h1>
         <p className="mt-4 font-body text-base text-text-secondary sm:text-lg">
-          Bookings, hostel complaints, maintenance, attendance, events, and more — built for
-          VIT-AP students, faculty, maintenance staff, hostel wardens, and administrators alike.
+          Bookings, hostel complaints, maintenance, attendance, events, and more — built for VIT-AP
+          students, faculty, maintenance staff, hostel wardens, and administrators alike.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Link to="/register" className={PRIMARY_LINK_CLASS}>

@@ -13,7 +13,9 @@ function renderShell(role: Role): void {
   render(
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <MemoryRouter>{withFakeAuth(makeUser({ role }), <AppShell>content</AppShell>)}</MemoryRouter>
+        <MemoryRouter>
+          {withFakeAuth(makeUser({ role }), <AppShell>content</AppShell>)}
+        </MemoryRouter>
       </ThemeProvider>
     </QueryClientProvider>,
   );

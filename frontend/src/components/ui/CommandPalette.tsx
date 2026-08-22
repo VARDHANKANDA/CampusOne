@@ -53,7 +53,9 @@ export function CommandPalette(): React.JSX.Element {
     const delayDebounce = setTimeout(async () => {
       setLoading(true);
       try {
-        const response = await apiClient.get<SearchResultItem[]>(`/search?q=${encodeURIComponent(query)}`);
+        const response = await apiClient.get<SearchResultItem[]>(
+          `/search?q=${encodeURIComponent(query)}`,
+        );
         setResults(response.data);
       } catch (err) {
         console.error("Search failed", err);
@@ -94,26 +96,50 @@ export function CommandPalette(): React.JSX.Element {
 
     if (user?.role === "student") {
       actions.push(
-        { label: "Submit Hostel Complaint", shortcut: "G C", action: () => navigate("/complaints/new") },
-        { label: "Scan QR Attendance", shortcut: "G A", action: () => navigate("/attendance/scan") }
+        {
+          label: "Submit Hostel Complaint",
+          shortcut: "G C",
+          action: () => navigate("/complaints/new"),
+        },
+        {
+          label: "Scan QR Attendance",
+          shortcut: "G A",
+          action: () => navigate("/attendance/scan"),
+        },
       );
     } else if (user?.role === "faculty") {
       actions.push(
         { label: "Book Classroom", shortcut: "G B", action: () => navigate("/bookings/new") },
-        { label: "Generate QR Attendance", shortcut: "G Q", action: () => navigate("/attendance/generate") }
+        {
+          label: "Generate QR Attendance",
+          shortcut: "G Q",
+          action: () => navigate("/attendance/generate"),
+        },
       );
     } else if (user?.role === "warden") {
-      actions.push(
-        { label: "Complaint Queue", shortcut: "G Q", action: () => navigate("/complaints/queue") }
-      );
+      actions.push({
+        label: "Complaint Queue",
+        shortcut: "G Q",
+        action: () => navigate("/complaints/queue"),
+      });
     } else if (user?.role === "maintenance_staff") {
-      actions.push(
-        { label: "My Maintenance Tasks", shortcut: "G T", action: () => navigate("/maintenance/tasks") }
-      );
+      actions.push({
+        label: "My Maintenance Tasks",
+        shortcut: "G T",
+        action: () => navigate("/maintenance/tasks"),
+      });
     } else if (user?.role === "admin") {
       actions.push(
-        { label: "User Accounts Management", shortcut: "G U", action: () => navigate("/admin/users") },
-        { label: "Audit Logs Viewer", shortcut: "G L", action: () => navigate("/admin/audit-logs") }
+        {
+          label: "User Accounts Management",
+          shortcut: "G U",
+          action: () => navigate("/admin/users"),
+        },
+        {
+          label: "Audit Logs Viewer",
+          shortcut: "G L",
+          action: () => navigate("/admin/audit-logs"),
+        },
       );
     }
 
@@ -138,7 +164,11 @@ export function CommandPalette(): React.JSX.Element {
             stroke="currentColor"
             strokeWidth="2"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
           </svg>
           <input
             ref={inputRef}
@@ -163,7 +193,9 @@ export function CommandPalette(): React.JSX.Element {
           )}
 
           {!loading && query.trim().length >= 2 && results.length === 0 && (
-            <div className="p-4 text-center text-xs text-slate">No matching campus records found.</div>
+            <div className="p-4 text-center text-xs text-slate">
+              No matching campus records found.
+            </div>
           )}
 
           {/* Render Search Results */}
@@ -181,9 +213,7 @@ export function CommandPalette(): React.JSX.Element {
                     >
                       <div className="flex-1">
                         <div className="text-sm font-medium text-text-primary">{item.title}</div>
-                        {item.subtitle && (
-                          <div className="text-xs text-slate">{item.subtitle}</div>
-                        )}
+                        {item.subtitle && <div className="text-xs text-slate">{item.subtitle}</div>}
                       </div>
                       <span className="rounded bg-canvas/60 px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-slate font-mono">
                         {item.type}
@@ -223,7 +253,9 @@ export function CommandPalette(): React.JSX.Element {
         {/* Footer info */}
         <div className="flex justify-between border-t border-card-border bg-canvas/40 px-3 py-2 text-[10px] text-slate">
           <span>Logged in as: {ROLE_LABEL[user?.role ?? "student"]}</span>
-          <span>Press <kbd className="font-mono">Ctrl + K</kbd> anywhere</span>
+          <span>
+            Press <kbd className="font-mono">Ctrl + K</kbd> anywhere
+          </span>
         </div>
       </div>
     </div>

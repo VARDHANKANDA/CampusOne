@@ -15,7 +15,7 @@ export function AdminBookingsPage(): React.JSX.Element {
   const [activeTab, setActiveTab] = useState<"pending" | "all">("pending");
   const { data: pendingBookings, isLoading: loadingPending } = usePendingBookings();
   const { data: allBookings, isLoading: loadingAll } = useMyBookings();
-  
+
   const approveBooking = useApproveBooking();
   const rejectBooking = useRejectBooking();
 
@@ -45,12 +45,20 @@ export function AdminBookingsPage(): React.JSX.Element {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="font-display text-2xl font-bold text-text-primary">Reservation Management</h1>
-          <p className="font-body text-xs text-slate mt-1">Approve classroom requests and audit booking transaction logs</p>
+          <h1 className="font-display text-2xl font-bold text-text-primary">
+            Reservation Management
+          </h1>
+          <p className="font-body text-xs text-slate mt-1">
+            Approve classroom requests and audit booking transaction logs
+          </p>
         </div>
-        
+
         {currentBookings && currentBookings.length > 0 && (
-          <Button onClick={handleExportBookings} variant="secondary" className="py-2.5 px-4 font-semibold text-xs self-stretch sm:self-auto">
+          <Button
+            onClick={handleExportBookings}
+            variant="secondary"
+            className="py-2.5 px-4 font-semibold text-xs self-stretch sm:self-auto"
+          >
             Export Booking Log CSV
           </Button>
         )}
@@ -93,7 +101,10 @@ export function AdminBookingsPage(): React.JSX.Element {
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {currentBookings.map((booking) => (
-            <div key={booking.id} className="rounded-plaque border border-card-border bg-card-bg hover:border-brass/30 transition">
+            <div
+              key={booking.id}
+              className="rounded-plaque border border-card-border bg-card-bg hover:border-brass/30 transition"
+            >
               <PlaqueCard
                 identifierLabel="Booking ID"
                 identifier={booking.id.slice(0, 8)}
@@ -102,8 +113,11 @@ export function AdminBookingsPage(): React.JSX.Element {
                   <div className="space-y-1">
                     <p className="text-xs">{booking.purpose || "No purpose provided"}</p>
                     <p className="text-[10px] text-slate uppercase tracking-wider">
-                      {booking.seat_number ? `PC Seat #${booking.seat_number}` : "Whole Room reservation"}
-                      {booking.recurrence_type !== "none" && ` • Repeats ${booking.recurrence_type}`}
+                      {booking.seat_number
+                        ? `PC Seat #${booking.seat_number}`
+                        : "Whole Room reservation"}
+                      {booking.recurrence_type !== "none" &&
+                        ` • Repeats ${booking.recurrence_type}`}
                     </p>
                   </div>
                 }
@@ -119,12 +133,14 @@ export function AdminBookingsPage(): React.JSX.Element {
                             : "muted"
                       }
                     />
-                    
+
                     {booking.status === "pending" && activeTab === "pending" && (
                       <div className="flex gap-2 mt-1">
                         <Button
                           variant="secondary"
-                          isLoading={approveBooking.isPending && approveBooking.variables === booking.id}
+                          isLoading={
+                            approveBooking.isPending && approveBooking.variables === booking.id
+                          }
                           onClick={() => approveBooking.mutate(booking.id)}
                           className="py-1 px-3 text-xs bg-quad-green/10 hover:bg-quad-green/20 border-quad-green/20 text-quad-green"
                         >
@@ -132,7 +148,9 @@ export function AdminBookingsPage(): React.JSX.Element {
                         </Button>
                         <Button
                           variant="secondary"
-                          isLoading={rejectBooking.isPending && rejectBooking.variables === booking.id}
+                          isLoading={
+                            rejectBooking.isPending && rejectBooking.variables === booking.id
+                          }
                           onClick={() => rejectBooking.mutate(booking.id)}
                           className="py-1 px-3 text-xs bg-brick/10 hover:bg-brick/20 border-brick/20 text-brick"
                         >

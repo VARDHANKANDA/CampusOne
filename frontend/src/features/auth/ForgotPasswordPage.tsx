@@ -52,7 +52,10 @@ export function ForgotPasswordPage(): React.JSX.Element {
         </form>
       )}
       <p className="mt-6 font-body text-sm text-text-secondary">
-        <Link to="/login" className="font-semibold text-ink-navy hover:underline transition-colors duration-200">
+        <Link
+          to="/login"
+          className="font-semibold text-ink-navy hover:underline transition-colors duration-200"
+        >
           Back to sign in
         </Link>
       </p>

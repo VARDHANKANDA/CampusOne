@@ -5,7 +5,7 @@
 export function exportToCSV<T extends Record<string, unknown>>(
   data: T[],
   filename: string,
-  headers?: string[]
+  headers?: string[],
 ): void {
   if (!data || data.length === 0) return;
 
@@ -31,7 +31,7 @@ export function exportToCSV<T extends Record<string, unknown>>(
   const csvString = csvRows.join("\n");
   const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
-  
+
   const link = document.createElement("a");
   link.setAttribute("href", url);
   link.setAttribute("download", filename.endsWith(".csv") ? filename : `${filename}.csv`);

@@ -61,10 +61,12 @@ export function AdminUsersPage(): React.JSX.Element {
         },
         onError: (err: unknown) => {
           setCreateError(
-            err instanceof ApiError ? err.message : "Failed to create user. Please verify input fields."
+            err instanceof ApiError
+              ? err.message
+              : "Failed to create user. Please verify input fields.",
           );
         },
-      }
+      },
     );
   };
 
@@ -85,15 +87,26 @@ export function AdminUsersPage(): React.JSX.Element {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="font-display text-2xl font-bold text-text-primary">User Accounts Directory</h1>
-          <p className="font-body text-xs text-slate mt-1">Manage student, faculty, warden, and technical staff access roles</p>
+          <h1 className="font-display text-2xl font-bold text-text-primary">
+            User Accounts Directory
+          </h1>
+          <p className="font-body text-xs text-slate mt-1">
+            Manage student, faculty, warden, and technical staff access roles
+          </p>
         </div>
 
         <div className="flex items-center gap-3 self-stretch sm:self-auto">
-          <Button onClick={() => setIsModalOpen(true)} className="py-2.5 px-4 font-semibold text-xs">
+          <Button
+            onClick={() => setIsModalOpen(true)}
+            className="py-2.5 px-4 font-semibold text-xs"
+          >
             Create User Account
           </Button>
-          <Button onClick={handleExportUsers} variant="secondary" className="py-2.5 px-4 font-semibold text-xs">
+          <Button
+            onClick={handleExportUsers}
+            variant="secondary"
+            className="py-2.5 px-4 font-semibold text-xs"
+          >
             Export directory CSV
           </Button>
         </div>
@@ -225,19 +238,30 @@ export function AdminUsersPage(): React.JSX.Element {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="w-full max-w-md bg-card-bg border border-card-border rounded-plaque p-6 shadow-level-3 space-y-4 animate-in zoom-in-95 duration-150">
             <div className="flex justify-between items-center border-b border-card-border pb-3">
-              <h3 className="font-display text-base font-bold text-text-primary">Create User Account</h3>
+              <h3 className="font-display text-base font-bold text-text-primary">
+                Create User Account
+              </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
                 className="text-slate hover:text-text-primary transition"
               >
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
             {createError && (
-              <div role="alert" className="rounded-plaque border border-brick/35 bg-brick/5 p-3 text-xs font-semibold text-brick">
+              <div
+                role="alert"
+                className="rounded-plaque border border-brick/35 bg-brick/5 p-3 text-xs font-semibold text-brick"
+              >
                 {createError}
               </div>
             )}
@@ -266,7 +290,10 @@ export function AdminUsersPage(): React.JSX.Element {
               />
 
               <div className="flex flex-col gap-1">
-                <label htmlFor="modal-role" className="font-body text-xs font-semibold text-text-primary">
+                <label
+                  htmlFor="modal-role"
+                  className="font-body text-xs font-semibold text-text-primary"
+                >
                   System Role
                 </label>
                 <select

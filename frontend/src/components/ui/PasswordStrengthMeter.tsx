@@ -7,7 +7,11 @@ const STRENGTH_COLORS = ["bg-brick", "bg-brick", "bg-brass", "bg-brass-light", "
  * registering — every rule here matches what the backend actually enforces,
  * so nothing here can promise "strong enough" when the server will reject it.
  */
-export function PasswordStrengthMeter({ password }: { password: string }): React.JSX.Element | null {
+export function PasswordStrengthMeter({
+  password,
+}: {
+  password: string;
+}): React.JSX.Element | null {
   if (!password) return null;
 
   const passedCount = PASSWORD_RULES.filter((rule) => rule.test(password)).length;

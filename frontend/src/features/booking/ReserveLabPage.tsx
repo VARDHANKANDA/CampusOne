@@ -10,7 +10,12 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { TextField } from "@/components/ui/TextField";
 import { ApiError } from "@/core/api/types";
 import type { AvailabilityParams } from "@/features/booking/api";
-import { useJoinWaitlist, useLabAvailability, useReserveLab, useOccupiedSeats } from "@/features/booking/labsApi";
+import {
+  useJoinWaitlist,
+  useLabAvailability,
+  useReserveLab,
+  useOccupiedSeats,
+} from "@/features/booking/labsApi";
 import { useBuildings } from "@/features/campus/api";
 
 const schema = z
@@ -53,7 +58,7 @@ export function ReserveLabPage(): React.JSX.Element {
   const occupiedSeats = useOccupiedSeats(
     selectedRoomId,
     searchParams?.start_time || null,
-    searchParams?.end_time || null
+    searchParams?.end_time || null,
   );
 
   const onSearch = (values: FormValues): void => {
@@ -86,9 +91,11 @@ export function ReserveLabPage(): React.JSX.Element {
       {
         onSuccess: () => setReservedRoomId(roomId),
         onError: (err) => {
-          setActionError(err instanceof ApiError ? err.message : "Could not reserve this lab. Try again.");
+          setActionError(
+            err instanceof ApiError ? err.message : "Could not reserve this lab. Try again.",
+          );
         },
-      }
+      },
     );
   };
 
@@ -101,10 +108,10 @@ export function ReserveLabPage(): React.JSX.Element {
         onSuccess: () => setWaitlistedRoomId(roomId),
         onError: (err) => {
           setActionError(
-            err instanceof ApiError ? err.message : "Could not join the waitlist. Try again."
+            err instanceof ApiError ? err.message : "Could not join the waitlist. Try again.",
           );
         },
-      }
+      },
     );
   };
 
@@ -123,7 +130,9 @@ export function ReserveLabPage(): React.JSX.Element {
             <h3 className="font-display text-base font-semibold text-text-primary">
               PC Terminal Selection: {selectedRoomName}
             </h3>
-            <p className="text-xs text-slate mt-0.5">Select an available PC terminal station below</p>
+            <p className="text-xs text-slate mt-0.5">
+              Select an available PC terminal station below
+            </p>
           </div>
           <span className="rounded bg-canvas px-2.5 py-1 text-[10px] uppercase font-bold text-slate">
             {20 - occupiedList.length} / 20 Available
@@ -156,8 +165,18 @@ export function ReserveLabPage(): React.JSX.Element {
                         : "bg-quad-green/10 border-quad-green/30 text-quad-green hover:bg-quad-green/20 hover:scale-[1.03] active:scale-[0.98]"
                   }`}
                 >
-                  <svg className="h-4 w-4 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  <svg
+                    className="h-4 w-4 mb-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
                   </svg>
                   <span className="font-mono text-[10px]">PC #{seatNum}</span>
                 </button>
@@ -187,8 +206,12 @@ export function ReserveLabPage(): React.JSX.Element {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="font-display text-2xl font-bold text-text-primary">Reserve a Laboratory Station</h1>
-        <p className="font-body text-xs text-slate mt-1">Book computer terminals and lab setups with waiting lists</p>
+        <h1 className="font-display text-2xl font-bold text-text-primary">
+          Reserve a Laboratory Station
+        </h1>
+        <p className="font-body text-xs text-slate mt-1">
+          Book computer terminals and lab setups with waiting lists
+        </p>
       </div>
 
       <form
@@ -241,75 +264,81 @@ export function ReserveLabPage(): React.JSX.Element {
 
       {/* Main split grid: Lab cards on left, seat layout on right */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
         {/* Lab List (Left 2 columns or full width) */}
-        <div className={selectedRoomId ? "lg:col-span-1 space-y-4" : "lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4"}>
-          {availability.data && availability.data.map((result) => {
-            const isReserved = reservedRoomId === result.room.id;
-            const isWaitlisted = waitlistedRoomId === result.room.id;
-            const isSelected = selectedRoomId === result.room.id;
+        <div
+          className={
+            selectedRoomId
+              ? "lg:col-span-1 space-y-4"
+              : "lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4"
+          }
+        >
+          {availability.data &&
+            availability.data.map((result) => {
+              const isReserved = reservedRoomId === result.room.id;
+              const isWaitlisted = waitlistedRoomId === result.room.id;
+              const isSelected = selectedRoomId === result.room.id;
 
-            return (
-              <div
-                key={result.room.id}
-                onClick={() => {
-                  setSelectedRoomId(result.room.id);
-                  setSelectedRoomName(result.room.name);
-                  setSelectedSeat(null);
-                }}
-                className={`cursor-pointer rounded-plaque transition border ${
-                  isSelected
-                    ? "border-brass bg-brass/5"
-                    : "border-card-border hover:border-brass/50 bg-card-bg"
-                }`}
-              >
-                <PlaqueCard
-                  identifierLabel="Lab Room"
-                  identifier={result.room.name}
-                  title={result.room.name}
-                  meta={
-                    <div className="space-y-1">
-                      <p className="text-xs">Capacity: {result.room.capacity} seats</p>
-                      <p className="text-[10px] text-slate uppercase tracking-wider">
-                        Building: {result.room.building?.name || "Main campus"}
-                      </p>
-                    </div>
-                  }
-                  status={
-                    isReserved ? (
-                      <StatusBadge label="Reserved" tone="success" />
-                    ) : isWaitlisted ? (
-                      <StatusBadge label="Waitlisted" tone="pending" />
-                    ) : result.available ? (
-                      <Button
-                        variant="secondary"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedRoomId(result.room.id);
-                          setSelectedRoomName(result.room.name);
-                        }}
-                        className="py-1 px-3 text-xs"
-                      >
-                        Select Seat
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="secondary"
-                        isLoading={joinWaitlist.isPending}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onJoinWaitlist(result.room.id);
-                        }}
-                        className="py-1 px-3 text-xs border-slate/30 text-slate"
-                      >
-                        Join Waitlist
-                      </Button>
-                    )
-                  }
-                />
-              </div>
-            );
-          })}
+              return (
+                <div
+                  key={result.room.id}
+                  onClick={() => {
+                    setSelectedRoomId(result.room.id);
+                    setSelectedRoomName(result.room.name);
+                    setSelectedSeat(null);
+                  }}
+                  className={`cursor-pointer rounded-plaque transition border ${
+                    isSelected
+                      ? "border-brass bg-brass/5"
+                      : "border-card-border hover:border-brass/50 bg-card-bg"
+                  }`}
+                >
+                  <PlaqueCard
+                    identifierLabel="Lab Room"
+                    identifier={result.room.name}
+                    title={result.room.name}
+                    meta={
+                      <div className="space-y-1">
+                        <p className="text-xs">Capacity: {result.room.capacity} seats</p>
+                        <p className="text-[10px] text-slate uppercase tracking-wider">
+                          Building: {result.room.building?.name || "Main campus"}
+                        </p>
+                      </div>
+                    }
+                    status={
+                      isReserved ? (
+                        <StatusBadge label="Reserved" tone="success" />
+                      ) : isWaitlisted ? (
+                        <StatusBadge label="Waitlisted" tone="pending" />
+                      ) : result.available ? (
+                        <Button
+                          variant="secondary"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedRoomId(result.room.id);
+                            setSelectedRoomName(result.room.name);
+                          }}
+                          className="py-1 px-3 text-xs"
+                        >
+                          Select Seat
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="secondary"
+                          isLoading={joinWaitlist.isPending}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onJoinWaitlist(result.room.id);
+                          }}
+                          className="py-1 px-3 text-xs border-slate/30 text-slate"
+                        >
+                          Join Waitlist
+                        </Button>
+                      )
+                    }
+                  />
+                </div>
+              );
+            })}
 
           {availability.data && availability.data.length === 0 && (
             <div className="col-span-3 rounded-plaque border border-card-border bg-card-bg/50 p-8 text-center text-xs text-slate">
@@ -322,7 +351,7 @@ export function ReserveLabPage(): React.JSX.Element {
         {selectedRoomId && (
           <div className="lg:col-span-2 space-y-4 animate-in slide-in-from-right-3 duration-200">
             {renderLabSeatLayout()}
-            
+
             {selectedSeat !== null && (
               <div className="flex justify-end gap-3 mt-4">
                 <Button
@@ -346,7 +375,11 @@ export function ReserveLabPage(): React.JSX.Element {
       </div>
 
       {(reservedRoomId || waitlistedRoomId) && (
-        <Button variant="secondary" onClick={() => navigate("/bookings/mine")} className="w-fit py-2 px-4 mt-2">
+        <Button
+          variant="secondary"
+          onClick={() => navigate("/bookings/mine")}
+          className="w-fit py-2 px-4 mt-2"
+        >
           View my bookings list
         </Button>
       )}

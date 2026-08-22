@@ -55,7 +55,7 @@ export function AdminEquipmentPage(): React.JSX.Element {
           setPurchaseDate("");
           setWarrantyExpiry("");
         },
-      }
+      },
     );
   };
 
@@ -75,21 +75,36 @@ export function AdminEquipmentPage(): React.JSX.Element {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="font-display text-2xl font-bold text-text-primary">Equipment Inventory Register</h1>
-        <p className="font-body text-xs text-slate mt-1">Audit physical assets, generate asset tag QR labels, and monitor warranties</p>
+        <h1 className="font-display text-2xl font-bold text-text-primary">
+          Equipment Inventory Register
+        </h1>
+        <p className="font-body text-xs text-slate mt-1">
+          Audit physical assets, generate asset tag QR labels, and monitor warranties
+        </p>
       </div>
 
       {/* Warranty Expiry Alerts Board */}
       {expiringItems.length > 0 && (
         <div className="rounded-plaque border border-brick/35 bg-brick/5 p-4 space-y-2 animate-in fade-in">
           <div className="flex items-center gap-2 font-bold text-xs text-brick">
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
             </svg>
             <span>Expiring Warranty Alert</span>
           </div>
           <p className="text-xs text-slate">
-            The following assets have warranties expiring in the next 30 days. Please verify if renewal is required:
+            The following assets have warranties expiring in the next 30 days. Please verify if
+            renewal is required:
           </p>
           <ul className="list-disc pl-5 text-xs text-text-primary space-y-1">
             {expiringItems.map((item) => (
@@ -109,7 +124,7 @@ export function AdminEquipmentPage(): React.JSX.Element {
         <h2 className="font-body text-xs font-bold uppercase tracking-widest text-slate border-b border-card-border pb-2 mb-1">
           Register Asset Entry
         </h2>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
           <TextField
             label="Asset Description / Name"
@@ -171,7 +186,11 @@ export function AdminEquipmentPage(): React.JSX.Element {
           />
         </div>
 
-        <Button type="submit" isLoading={createEquipment.isPending} className="w-fit py-2 px-5 mt-1">
+        <Button
+          type="submit"
+          isLoading={createEquipment.isPending}
+          className="w-fit py-2 px-5 mt-1"
+        >
           Add Equipment Entry
         </Button>
       </form>
@@ -196,9 +215,13 @@ export function AdminEquipmentPage(): React.JSX.Element {
               {equipment?.map((item) => (
                 <tr key={item.id} className="hover:bg-canvas/10 transition-colors">
                   <td className="px-5 py-3.5 font-bold text-text-primary">{item.name}</td>
-                  <td className="px-5 py-3.5 text-slate capitalize">{item.category.replace("_", " ")}</td>
+                  <td className="px-5 py-3.5 text-slate capitalize">
+                    {item.category.replace("_", " ")}
+                  </td>
                   <td className="px-5 py-3.5 text-slate font-mono">{item.purchase_date || "—"}</td>
-                  <td className="px-5 py-3.5 text-slate font-mono">{item.warranty_expiry || "—"}</td>
+                  <td className="px-5 py-3.5 text-slate font-mono">
+                    {item.warranty_expiry || "—"}
+                  </td>
                   <td className="px-5 py-3.5">
                     <StatusBadge label={item.status} tone={STATUS_TONE[item.status]} />
                   </td>
@@ -229,15 +252,22 @@ export function AdminEquipmentPage(): React.JSX.Element {
       {activePrintItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 print:bg-white print:p-0">
           <div className="w-full max-w-sm bg-card-bg border border-card-border rounded-plaque p-6 shadow-level-3 space-y-5 animate-in zoom-in-95 duration-150 print:border-0 print:shadow-none print:w-full print:max-w-none print:p-0">
-            
             {/* Header (hides when printing) */}
             <div className="flex justify-between items-center border-b border-card-border pb-3 print:hidden">
-              <h3 className="font-display text-base font-bold text-text-primary">Print Asset Tag Label</h3>
+              <h3 className="font-display text-base font-bold text-text-primary">
+                Print Asset Tag Label
+              </h3>
               <button
                 onClick={() => setActivePrintItem(null)}
                 className="text-slate hover:text-text-primary transition"
               >
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -268,11 +298,7 @@ export function AdminEquipmentPage(): React.JSX.Element {
 
             {/* Actions (hides when printing) */}
             <div className="flex justify-end gap-3 pt-3 border-t border-card-border print:hidden">
-              <Button
-                variant="secondary"
-                onClick={() => setActivePrintItem(null)}
-                className="py-2"
-              >
+              <Button variant="secondary" onClick={() => setActivePrintItem(null)} className="py-2">
                 Close
               </Button>
               <Button

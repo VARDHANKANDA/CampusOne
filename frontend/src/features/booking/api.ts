@@ -99,4 +99,3 @@ export function useRoomBookings(roomId: string | null) {
     enabled: roomId !== null,
   });
 }
-

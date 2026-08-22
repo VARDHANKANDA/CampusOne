@@ -41,14 +41,20 @@ export function PlaqueCard({
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="font-display text-base font-bold text-text-primary group-hover:text-ink-navy transition-colors duration-200">{title}</h3>
-          {meta && <div className="mt-2 font-body text-xs text-text-secondary leading-relaxed">{meta}</div>}
+          <h3 className="font-display text-base font-bold text-text-primary group-hover:text-ink-navy transition-colors duration-200">
+            {title}
+          </h3>
+          {meta && (
+            <div className="mt-2 font-body text-xs text-text-secondary leading-relaxed">{meta}</div>
+          )}
         </div>
         <div className="text-right flex-shrink-0">
           <span className="block font-body text-[9px] font-semibold uppercase tracking-wider text-slate">
             {identifierLabel}
           </span>
-          <span className="font-mono text-xs font-semibold text-text-primary bg-slate/10 px-1.5 py-0.5 rounded mt-1 inline-block">{identifier}</span>
+          <span className="font-mono text-xs font-semibold text-text-primary bg-slate/10 px-1.5 py-0.5 rounded mt-1 inline-block">
+            {identifier}
+          </span>
         </div>
       </div>
       {status && <div className="mt-4 flex justify-end items-center">{status}</div>}

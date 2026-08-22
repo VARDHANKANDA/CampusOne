@@ -39,7 +39,7 @@ const schema = z
     {
       message: "Recurrence end date is required for repeating bookings",
       path: ["recurrence_end_date"],
-    }
+    },
   );
 
 type FormValues = z.infer<typeof schema>;
@@ -67,7 +67,8 @@ export function NewBookingPage(): React.JSX.Element {
   });
 
   const isRecurring = watch("is_recurring");
-  const selectedDateStr = watch("start_time")?.split("T")[0] || new Date().toISOString().split("T")[0];
+  const selectedDateStr =
+    watch("start_time")?.split("T")[0] || new Date().toISOString().split("T")[0];
 
   const availability = useAvailability(searchParams);
   const createBooking = useCreateBooking();
@@ -109,15 +110,15 @@ export function NewBookingPage(): React.JSX.Element {
             setBookingError(
               window
                 ? `Conflict detected: That room is booked for an overlapping window (${new Date(
-                    window[0]
+                    window[0],
                   ).toLocaleTimeString()} – ${new Date(window[1]).toLocaleTimeString()}).`
-                : "A schedule conflict exists for that room and time. Please check the calendar timeline."
+                : "A schedule conflict exists for that room and time. Please check the calendar timeline.",
             );
           } else {
             setBookingError(err instanceof Error ? err.message : "Could not create the booking.");
           }
         },
-      }
+      },
     );
   };
 
@@ -197,12 +198,13 @@ export function NewBookingPage(): React.JSX.Element {
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="font-display text-2xl font-bold text-text-primary">Book a Classroom</h1>
-        <p className="font-body text-xs text-slate mt-1">Schedule lecture halls and review vacancy timelines</p>
+        <p className="font-body text-xs text-slate mt-1">
+          Schedule lecture halls and review vacancy timelines
+        </p>
       </div>
 
       {/* Main Form & Timeline layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
         {/* Left Column: Search & Parameter Form */}
         <div className="lg:col-span-1">
           <form
@@ -215,7 +217,10 @@ export function NewBookingPage(): React.JSX.Element {
             </h2>
 
             <div className="flex flex-col gap-1">
-              <label htmlFor="building" className="font-body text-xs font-semibold text-text-primary">
+              <label
+                htmlFor="building"
+                className="font-body text-xs font-semibold text-text-primary"
+              >
                 Building Location
               </label>
               <select
@@ -278,7 +283,10 @@ export function NewBookingPage(): React.JSX.Element {
               {isRecurring && (
                 <div className="pl-6 space-y-3 animate-in slide-in-from-top-2 duration-150">
                   <div className="flex flex-col gap-1">
-                    <label htmlFor="recurrence_type" className="font-body text-xs font-semibold text-text-primary">
+                    <label
+                      htmlFor="recurrence_type"
+                      className="font-body text-xs font-semibold text-text-primary"
+                    >
                       Repeat Frequency
                     </label>
                     <select
@@ -309,7 +317,6 @@ export function NewBookingPage(): React.JSX.Element {
 
         {/* Right 2 Columns: Occupancy Timelines & Search Results */}
         <div className="lg:col-span-2 space-y-6">
-          
           {/* Visual Occupancy Timeline Component */}
           {selectedRoomId && renderVisualScheduler()}
 
@@ -320,8 +327,18 @@ export function NewBookingPage(): React.JSX.Element {
               className="rounded-plaque border border-brick/35 bg-brick/5 p-4 text-xs font-medium text-brick animate-in fade-in"
             >
               <div className="flex items-center gap-2 font-bold mb-1">
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
                 </svg>
                 <span>Collision Warning</span>
               </div>
@@ -366,7 +383,9 @@ export function NewBookingPage(): React.JSX.Element {
                         title={result.room.name}
                         meta={
                           <div className="space-y-1">
-                            <p className="text-xs">Building: {result.room.building?.name || "Main campus"}</p>
+                            <p className="text-xs">
+                              Building: {result.room.building?.name || "Main campus"}
+                            </p>
                             <p className="text-[10px] text-slate uppercase tracking-wider">
                               Tags: {result.room.equipment_tags.join(", ") || "None"}
                             </p>
@@ -412,8 +431,12 @@ export function NewBookingPage(): React.JSX.Element {
                           className="p-3 border border-card-border rounded-plaque bg-card-bg/60 flex justify-between items-center"
                         >
                           <div>
-                            <span className="font-bold text-xs text-text-primary block">{alt.room.name}</span>
-                            <span className="text-[10px] text-slate">Capacity: {alt.room.capacity} seats</span>
+                            <span className="font-bold text-xs text-text-primary block">
+                              {alt.room.name}
+                            </span>
+                            <span className="text-[10px] text-slate">
+                              Capacity: {alt.room.capacity} seats
+                            </span>
                           </div>
                           <Button
                             onClick={() => {
@@ -428,7 +451,9 @@ export function NewBookingPage(): React.JSX.Element {
                         </div>
                       ))}
                     {availability.data.filter((r) => r.available).length === 0 && (
-                      <p className="text-xs text-slate">No alternate rooms available for this capacity or time slot.</p>
+                      <p className="text-xs text-slate">
+                        No alternate rooms available for this capacity or time slot.
+                      </p>
                     )}
                   </div>
                 </div>

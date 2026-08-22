@@ -1,7 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/core/auth/useAuth";
 import { useMyComplaints, useVerifyComplaint, useComplaintQueue } from "@/features/complaint/api";
-import { useMyBookings, usePendingBookings, useApproveBooking, useRejectBooking } from "@/features/booking/api";
+import {
+  useMyBookings,
+  usePendingBookings,
+  useApproveBooking,
+  useRejectBooking,
+} from "@/features/booking/api";
 import { useMyMaintenanceTasks } from "@/features/maintenance/api";
 import { useNotifications } from "@/features/notification/api";
 import { useAllEquipment } from "@/features/equipment/api";
@@ -61,12 +66,14 @@ export function DashboardPage(): React.JSX.Element {
     switch (user.role) {
       case "student": {
         const openComplaints = (studentComplaints.data || []).filter(
-          (c) => c.status !== "verified"
+          (c) => c.status !== "verified",
         );
         if (openComplaints.length === 0) {
           return (
             <div className="rounded-plaque border-2 border-dashed border-brass/35 bg-card-bg/30 p-6 text-center">
-              <p className="text-sm text-slate">No active hostel complaints. Submit one if you need a repair.</p>
+              <p className="text-sm text-slate">
+                No active hostel complaints. Submit one if you need a repair.
+              </p>
             </div>
           );
         }
@@ -81,12 +88,17 @@ export function DashboardPage(): React.JSX.Element {
                 meta={
                   <div className="space-y-1">
                     <p className="line-clamp-2">{c.description}</p>
-                    <p className="text-xs text-slate">Submitted: {new Date(c.created_at).toLocaleDateString()}</p>
+                    <p className="text-xs text-slate">
+                      Submitted: {new Date(c.created_at).toLocaleDateString()}
+                    </p>
                   </div>
                 }
                 status={
                   <div className="flex items-center gap-2">
-                    <StatusBadge label={c.status} tone={c.status === "completed" ? "success" : "pending"} />
+                    <StatusBadge
+                      label={c.status}
+                      tone={c.status === "completed" ? "success" : "pending"}
+                    />
                     {c.status === "completed" && (
                       <Button
                         variant="secondary"
@@ -109,12 +121,14 @@ export function DashboardPage(): React.JSX.Element {
         const upcoming = (facultyBookings.data || []).filter(
           (b) =>
             (b.status === "confirmed" || b.status === "pending") &&
-            new Date(b.end_time) > new Date()
+            new Date(b.end_time) > new Date(),
         );
         if (upcoming.length === 0) {
           return (
             <div className="rounded-plaque border-2 border-dashed border-brass/35 bg-card-bg/30 p-6 text-center">
-              <p className="text-sm text-slate">No upcoming bookings. Reserve classrooms or labs when needed.</p>
+              <p className="text-sm text-slate">
+                No upcoming bookings. Reserve classrooms or labs when needed.
+              </p>
             </div>
           );
         }
@@ -132,7 +146,12 @@ export function DashboardPage(): React.JSX.Element {
                     <p>Building: {b.room?.building?.name || "Main Campus"}</p>
                   </div>
                 }
-                status={<StatusBadge label={b.status} tone={b.status === "confirmed" ? "success" : "pending"} />}
+                status={
+                  <StatusBadge
+                    label={b.status}
+                    tone={b.status === "confirmed" ? "success" : "pending"}
+                  />
+                }
               />
             ))}
           </div>
@@ -144,7 +163,9 @@ export function DashboardPage(): React.JSX.Element {
         if (unassigned.length === 0) {
           return (
             <div className="rounded-plaque border-2 border-dashed border-brass/35 bg-card-bg/30 p-6 text-center">
-              <p className="text-sm text-slate">All hostel complaints have been assigned to technicians.</p>
+              <p className="text-sm text-slate">
+                All hostel complaints have been assigned to technicians.
+              </p>
             </div>
           );
         }
@@ -159,11 +180,16 @@ export function DashboardPage(): React.JSX.Element {
                 meta={
                   <div className="space-y-1">
                     <p className="line-clamp-2 text-xs">{c.description}</p>
-                    <p className="text-xs text-slate">Priority: <span className="font-semibold text-brick">{c.priority}</span></p>
+                    <p className="text-xs text-slate">
+                      Priority: <span className="font-semibold text-brick">{c.priority}</span>
+                    </p>
                   </div>
                 }
                 status={
-                  <Button onClick={() => navigate("/complaints/queue")} className="py-1 px-3 text-xs">
+                  <Button
+                    onClick={() => navigate("/complaints/queue")}
+                    className="py-1 px-3 text-xs"
+                  >
                     Assign Technician
                   </Button>
                 }
@@ -178,7 +204,9 @@ export function DashboardPage(): React.JSX.Element {
         if (myTasks.length === 0) {
           return (
             <div className="rounded-plaque border-2 border-dashed border-brass/35 bg-card-bg/30 p-6 text-center">
-              <p className="text-sm text-slate">No pending tasks. Relax or check completed records.</p>
+              <p className="text-sm text-slate">
+                No pending tasks. Relax or check completed records.
+              </p>
             </div>
           );
         }
@@ -193,13 +221,21 @@ export function DashboardPage(): React.JSX.Element {
                 meta={
                   <div className="text-xs space-y-1">
                     <p className="line-clamp-2">{t.complaint?.description || "Work Order"}</p>
-                    <p className="text-slate">Due: {t.estimated_completion ? new Date(t.estimated_completion).toLocaleDateString() : "ASAP"}</p>
+                    <p className="text-slate">
+                      Due:{" "}
+                      {t.estimated_completion
+                        ? new Date(t.estimated_completion).toLocaleDateString()
+                        : "ASAP"}
+                    </p>
                   </div>
                 }
                 status={
                   <div className="flex items-center gap-2">
                     <StatusBadge label={t.status} tone="pending" />
-                    <Button onClick={() => navigate("/maintenance/tasks")} className="py-1 px-3 text-xs">
+                    <Button
+                      onClick={() => navigate("/maintenance/tasks")}
+                      className="py-1 px-3 text-xs"
+                    >
                       Update Task
                     </Button>
                   </div>
@@ -223,13 +259,27 @@ export function DashboardPage(): React.JSX.Element {
           <div className="space-y-4">
             {expiringWarranties.length > 0 && (
               <div className="rounded-plaque border border-brick/35 bg-brick/5 p-4 flex items-start gap-3 animate-in fade-in">
-                <svg className="h-5 w-5 text-brick flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                <svg
+                  className="h-5 w-5 text-brick flex-shrink-0 mt-0.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
                 </svg>
                 <div>
-                  <span className="block font-bold text-xs text-brick">Warranty Expiration Alert</span>
+                  <span className="block font-bold text-xs text-brick">
+                    Warranty Expiration Alert
+                  </span>
                   <p className="text-xs text-slate mt-1">
-                    {expiringWarranties.length} equipment {expiringWarranties.length === 1 ? "asset has" : "assets have"} warranties expiring in the next 30 days. Please review contracts in the inventory panel.
+                    {expiringWarranties.length} equipment{" "}
+                    {expiringWarranties.length === 1 ? "asset has" : "assets have"} warranties
+                    expiring in the next 30 days. Please review contracts in the inventory panel.
                   </p>
                 </div>
               </div>
@@ -237,7 +287,9 @@ export function DashboardPage(): React.JSX.Element {
 
             {pendingApprovals.length === 0 ? (
               <div className="rounded-plaque border-2 border-dashed border-brass/35 bg-card-bg/30 p-6 text-center">
-                <p className="text-sm text-slate">All bookings are processed. Nothing awaiting approval.</p>
+                <p className="text-sm text-slate">
+                  All bookings are processed. Nothing awaiting approval.
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -289,30 +341,90 @@ export function DashboardPage(): React.JSX.Element {
     switch (user.role) {
       case "student":
         return [
-          { label: "Book a Lab", path: "/labs/reserve", style: "border border-brass/30 text-brass hover:bg-brass/10 hover:border-brass/50 transition-all duration-200" },
-          { label: "Report Hostel Issue", path: "/complaints/new", style: "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-rose-500/10 hover:shadow-md transition-all duration-200" },
-          { label: "Scan Class QR", path: "/attendance/scan", style: "bg-gradient-to-r from-brass to-brass-light text-white hover:opacity-95 font-semibold transition-all duration-200 shadow-sm shadow-amber-500/10 hover:shadow-md" },
+          {
+            label: "Book a Lab",
+            path: "/labs/reserve",
+            style:
+              "border border-brass/30 text-brass hover:bg-brass/10 hover:border-brass/50 transition-all duration-200",
+          },
+          {
+            label: "Report Hostel Issue",
+            path: "/complaints/new",
+            style:
+              "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-rose-500/10 hover:shadow-md transition-all duration-200",
+          },
+          {
+            label: "Scan Class QR",
+            path: "/attendance/scan",
+            style:
+              "bg-gradient-to-r from-brass to-brass-light text-white hover:opacity-95 font-semibold transition-all duration-200 shadow-sm shadow-amber-500/10 hover:shadow-md",
+          },
         ];
       case "faculty":
         return [
-          { label: "Schedule Seminar/Event", path: "/events/new", style: "border border-brass/30 text-brass hover:bg-brass/10 hover:border-brass/50 transition-all duration-200" },
-          { label: "Book Lecture Hall", path: "/bookings/new", style: "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-rose-500/10 hover:shadow-md transition-all duration-200" },
-          { label: "Start QR Attendance", path: "/attendance/generate", style: "bg-gradient-to-r from-brass to-brass-light text-white hover:opacity-95 font-semibold transition-all duration-200 shadow-sm shadow-amber-500/10 hover:shadow-md" },
+          {
+            label: "Schedule Seminar/Event",
+            path: "/events/new",
+            style:
+              "border border-brass/30 text-brass hover:bg-brass/10 hover:border-brass/50 transition-all duration-200",
+          },
+          {
+            label: "Book Lecture Hall",
+            path: "/bookings/new",
+            style:
+              "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-rose-500/10 hover:shadow-md transition-all duration-200",
+          },
+          {
+            label: "Start QR Attendance",
+            path: "/attendance/generate",
+            style:
+              "bg-gradient-to-r from-brass to-brass-light text-white hover:opacity-95 font-semibold transition-all duration-200 shadow-sm shadow-amber-500/10 hover:shadow-md",
+          },
         ];
       case "warden":
         return [
-          { label: "Complaints Queue", path: "/complaints/queue", style: "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-rose-500/10 hover:shadow-md transition-all duration-200" },
-          { label: "Assigned Status Reports", path: "/complaints/assign", style: "border border-brass/30 text-brass hover:bg-brass/10 hover:border-brass/50 transition-all duration-200" },
+          {
+            label: "Complaints Queue",
+            path: "/complaints/queue",
+            style:
+              "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-rose-500/10 hover:shadow-md transition-all duration-200",
+          },
+          {
+            label: "Assigned Status Reports",
+            path: "/complaints/assign",
+            style:
+              "border border-brass/30 text-brass hover:bg-brass/10 hover:border-brass/50 transition-all duration-200",
+          },
         ];
       case "maintenance_staff":
         return [
-          { label: "Open Tasks List", path: "/maintenance/tasks", style: "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-rose-500/10 hover:shadow-md transition-all duration-200" },
+          {
+            label: "Open Tasks List",
+            path: "/maintenance/tasks",
+            style:
+              "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-rose-500/10 hover:shadow-md transition-all duration-200",
+          },
         ];
       case "admin":
         return [
-          { label: "Users Registry", path: "/admin/users", style: "border border-brass/30 text-brass hover:bg-brass/10 hover:border-brass/50 transition-all duration-200" },
-          { label: "Manage Classrooms", path: "/admin/rooms", style: "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-rose-500/10 hover:shadow-md transition-all duration-200" },
-          { label: "Audit Trails", path: "/admin/audit-logs", style: "bg-gradient-to-r from-brass to-brass-light text-white hover:opacity-95 font-semibold transition-all duration-200 shadow-sm shadow-amber-500/10 hover:shadow-md" },
+          {
+            label: "Users Registry",
+            path: "/admin/users",
+            style:
+              "border border-brass/30 text-brass hover:bg-brass/10 hover:border-brass/50 transition-all duration-200",
+          },
+          {
+            label: "Manage Classrooms",
+            path: "/admin/rooms",
+            style:
+              "bg-ink-navy text-white hover:opacity-95 shadow-sm shadow-rose-500/10 hover:shadow-md transition-all duration-200",
+          },
+          {
+            label: "Audit Trails",
+            path: "/admin/audit-logs",
+            style:
+              "bg-gradient-to-r from-brass to-brass-light text-white hover:opacity-95 font-semibold transition-all duration-200 shadow-sm shadow-amber-500/10 hover:shadow-md",
+          },
         ];
       default:
         return [];
@@ -324,17 +436,33 @@ export function DashboardPage(): React.JSX.Element {
       {/* Welcome Banner */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 rounded-plaque border border-card-border bg-card-bg/60 backdrop-blur-sm p-6 shadow-sm">
         <div>
-          <h1 className="font-display text-2xl font-bold text-text-primary tracking-tight">Welcome back, {user.full_name || user.email}</h1>
-          <p className="mt-1 font-body text-xs text-text-secondary font-medium">{ROLE_LABEL[user.role]} Console · Campus operations digitized</p>
+          <h1 className="font-display text-2xl font-bold text-text-primary tracking-tight">
+            Welcome back, {user.full_name || user.email}
+          </h1>
+          <p className="mt-1 font-body text-xs text-text-secondary font-medium">
+            {ROLE_LABEL[user.role]} Console · Campus operations digitized
+          </p>
         </div>
 
         {/* Live Weather Widget Mockup */}
         <div className="flex items-center gap-3 bg-card-bg/40 backdrop-blur-sm px-4 py-2 rounded-plaque border border-card-border shadow-sm">
-          <svg className="h-6 w-6 text-amber-500 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+          <svg
+            className="h-6 w-6 text-amber-500 animate-pulse"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2.5"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"
+            />
           </svg>
           <div className="text-right">
-            <div className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Campus Temp</div>
+            <div className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">
+              Campus Temp
+            </div>
             <div className="text-xs font-bold text-text-primary mt-0.5">78°F · Sunny</div>
           </div>
         </div>
@@ -342,10 +470,8 @@ export function DashboardPage(): React.JSX.Element {
 
       {/* Main Grid: Info Cards + Attention Panels */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
         {/* Left 2 Columns: Quick Actions and Needs Attention */}
         <div className="lg:col-span-2 space-y-6">
-          
           {/* Quick Actions Panel */}
           <section className="rounded-plaque border border-card-border bg-card-bg p-6 shadow-level-1">
             <h2 className="mb-4 font-body text-xs font-bold uppercase tracking-widest text-slate">
@@ -379,7 +505,7 @@ export function DashboardPage(): React.JSX.Element {
             <h2 className="mb-4 font-body text-xs font-bold uppercase tracking-widest text-slate">
               Live updates
             </h2>
-            
+
             <div className="flex-1 overflow-y-auto pr-1">
               {!notifications || notifications.length === 0 ? (
                 <div className="h-full flex items-center justify-center text-center p-6 text-xs text-slate">
@@ -388,14 +514,20 @@ export function DashboardPage(): React.JSX.Element {
               ) : (
                 <ul className="space-y-4">
                   {notifications.slice(0, 5).map((n) => (
-                    <li key={n.id} className="relative pl-5 border-l-2 border-brass/30 last:border-0 pb-1">
+                    <li
+                      key={n.id}
+                      className="relative pl-5 border-l-2 border-brass/30 last:border-0 pb-1"
+                    >
                       <span className="absolute left-[-5px] top-1.5 h-2 w-2 rounded-full bg-brass" />
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-xs font-bold text-text-primary capitalize">
                           {n.type.replace(/_/g, " ")}
                         </span>
                         <span className="text-[9px] text-slate">
-                          {new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          {new Date(n.created_at).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
                         </span>
                       </div>
                       <p className="text-xs text-slate mt-0.5 line-clamp-2">
@@ -410,9 +542,12 @@ export function DashboardPage(): React.JSX.Element {
                 </ul>
               )}
             </div>
-            
+
             <div className="border-t border-card-border pt-3 mt-3 text-center">
-              <Link to="/notifications" className="text-xs font-semibold text-brass hover:underline">
+              <Link
+                to="/notifications"
+                className="text-xs font-semibold text-brass hover:underline"
+              >
                 View all notifications →
               </Link>
             </div>
