@@ -32,6 +32,7 @@ CampusOne is an enterprise-grade, full-stack SaaS platform engineered to digitiz
 - [22. Roadmap](#22-roadmap)
 - [23. Contributing](#23-contributing)
 - [24. License](#24-license)
+- [25. Author](#25-author)
 
 ---
 
@@ -919,7 +920,13 @@ Contributions are welcome! Please follow these steps:
 
 ## 24. License
 
-This project currently has no license specified. All rights reserved by the project authors.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 25. Author
+
+**VARDHANKANDA**
 
 ---
 
