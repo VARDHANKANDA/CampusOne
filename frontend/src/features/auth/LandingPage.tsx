@@ -24,7 +24,7 @@ export function LandingPage(): React.JSX.Element {
     <main className="saas-grid-bg min-h-screen bg-canvas">
       <header className="flex items-center justify-between px-6 py-5 sm:px-10">
         <p className="font-display text-xl font-extrabold tracking-tight bg-gradient-to-r from-ink-navy via-brass to-brass-light bg-clip-text text-transparent">
-          VIT-AP Smart Campus
+          CampusOne
         </p>
         <div className="flex items-center gap-3">
           <Link
@@ -82,7 +82,7 @@ export function LandingPage(): React.JSX.Element {
       </section>
 
       <footer className="border-t border-card-border px-6 py-8 text-center font-body text-xs text-text-secondary">
-        VIT-AP Smart Campus Infrastructure Platform
+        CampusOne
       </footer>
     </main>
   );

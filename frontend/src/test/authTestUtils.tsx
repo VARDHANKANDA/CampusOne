@@ -12,6 +12,8 @@ export function withFakeAuth(user: UserProfile, children: ReactNode): React.JSX.
     status: "authenticated",
     login: async () => {},
     register: async () => {},
+    completeOAuthLogin: async () => {},
+    refreshProfile: async () => {},
     logout: async () => {},
   };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -23,6 +25,7 @@ export function makeUser(overrides: Partial<UserProfile> = {}): UserProfile {
     email: "faculty@example.edu",
     full_name: "Dr. Ada Faculty",
     role: "faculty",
+    requested_role: null,
     department: "Computer Science",
     is_active: true,
     ...overrides,

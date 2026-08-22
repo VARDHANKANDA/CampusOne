@@ -8,7 +8,7 @@ from app.core.logging import configure_logging
 configure_logging()
 settings = get_settings()
 
-app = FastAPI(title="VIT-AP Smart Campus Infrastructure Platform API", version="1.0.0")
+app = FastAPI(title="CampusOne API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,

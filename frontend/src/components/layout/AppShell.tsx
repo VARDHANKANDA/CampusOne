@@ -63,7 +63,7 @@ export function AppShell({ children }: { children: ReactNode }): React.JSX.Eleme
       {/* Sidebar Navigation */}
       <aside className="flex w-64 flex-col border-r border-card-border bg-card-bg text-text-primary">
         <div className="px-6 py-6 border-b border-card-border">
-          <p className="font-display text-xl font-extrabold tracking-tight bg-gradient-to-r from-ink-navy via-ink-navy to-brass bg-clip-text text-transparent">VIT-AP</p>
+          <p className="font-display text-xl font-extrabold tracking-tight bg-gradient-to-r from-ink-navy via-ink-navy to-brass bg-clip-text text-transparent">CampusOne</p>
           <p className="font-body text-[10px] font-bold text-text-secondary uppercase tracking-widest bg-card-bg px-2.5 py-1 rounded-full w-max mt-2 border border-card-border">{ROLE_LABEL[user.role]}</p>
         </div>
         

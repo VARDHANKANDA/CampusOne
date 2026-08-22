@@ -246,7 +246,7 @@ export function AdminEquipmentPage(): React.JSX.Element {
             {/* Printable Label Layout */}
             <div className="flex flex-col items-center text-center p-6 border-2 border-dashed border-slate/30 rounded-plaque bg-canvas/30 space-y-4 print:border-2 print:border-solid print:border-black print:rounded-none print:p-8 print:my-10 print:mx-auto print:max-w-xs">
               <div className="font-display text-[10px] font-bold tracking-widest text-slate print:text-black uppercase">
-                VIT-AP Smart Campus Property Tag
+                CampusOne Property Tag
               </div>
               <img
                 src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${activePrintItem.id}`}
