@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { apiClient } from "@/core/api/client";
@@ -70,7 +70,9 @@ describe("MyComplaintsPage", () => {
 
     // Expand the completed card to render the approve/verify panel
     const completedCardHeader = screen.getByText("Flickering light");
-    completedCardHeader.click();
+    await act(async () => {
+      completedCardHeader.click();
+    });
 
     expect(
       await screen.findByRole("button", { name: /approve & verify resolution/i }),

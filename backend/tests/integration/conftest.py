@@ -72,6 +72,9 @@ def engine():
         pytest.skip("Integration tests require a reachable Postgres at DATABASE_URL")
 
     eng = create_engine(settings.database_url)
+    with eng.connect() as conn:
+        conn.execute(text("CREATE EXTENSION IF NOT EXISTS btree_gist"))
+        conn.commit()
     Base.metadata.create_all(eng)
     yield eng
     Base.metadata.drop_all(eng)

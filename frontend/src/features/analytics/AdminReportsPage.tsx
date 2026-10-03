@@ -121,3 +121,70 @@ export function AdminReportsPage(): React.JSX.Element {
     </div>
   );
 }
+
+export function HostelReportsPage(): React.JSX.Element {
+  const { data: complaints, isLoading } = useComplaintStats();
+
+  return (
+    <div className="flex flex-col gap-8">
+      <div>
+        <h1 className="font-display text-2xl text-ink-navy dark:text-brass">Hostel Reports &amp; Analytics</h1>
+        <p className="font-body text-sm text-text-secondary mt-1">Overview of hostel complaint statuses, categories, and resolution priorities.</p>
+      </div>
+
+      {isLoading ? (
+        <div className="flex items-center justify-center p-12">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-ink-navy/20 border-t-ink-navy dark:border-brass/20 dark:border-t-brass" />
+        </div>
+      ) : complaints ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="rounded-plaque border border-card-border bg-card-bg p-5 shadow-level-1">
+            <h2 className="mb-4 font-body text-sm font-bold uppercase tracking-wider text-text-secondary">
+              Complaints by Status
+            </h2>
+            <Bar
+              data={barData(
+                Object.keys(complaints.by_status).map((k) => k.replace(/_/g, " ")),
+                Object.values(complaints.by_status),
+                PALETTE.inkNavy,
+              )}
+              options={{ responsive: true, plugins: { legend: { display: false } } }}
+            />
+          </div>
+
+          <div className="rounded-plaque border border-card-border bg-card-bg p-5 shadow-level-1">
+            <h2 className="mb-4 font-body text-sm font-bold uppercase tracking-wider text-text-secondary">
+              Complaints by Priority
+            </h2>
+            <Bar
+              data={barData(
+                Object.keys(complaints.by_priority).map((k) => k.toUpperCase()),
+                Object.values(complaints.by_priority),
+                PALETTE.brick,
+              )}
+              options={{ responsive: true, plugins: { legend: { display: false } } }}
+            />
+          </div>
+
+          <div className="md:col-span-2 rounded-plaque border border-card-border bg-card-bg p-5 shadow-level-1">
+            <h2 className="mb-4 font-body text-sm font-bold uppercase tracking-wider text-text-secondary">
+              Complaints by Category
+            </h2>
+            <Bar
+              data={barData(
+                Object.keys(complaints.by_category).map((k) => k.replace(/_/g, " ")),
+                Object.values(complaints.by_category),
+                PALETTE.brass,
+              )}
+              options={{ responsive: true, plugins: { legend: { display: false } } }}
+            />
+          </div>
+        </div>
+      ) : (
+        <div className="rounded-plaque border border-card-border bg-card-bg p-8 text-center text-text-secondary">
+          No complaint data recorded yet.
+        </div>
+      )}
+    </div>
+  );
+}

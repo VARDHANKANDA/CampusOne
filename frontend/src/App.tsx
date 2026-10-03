@@ -11,7 +11,7 @@ import { AdminBookingsPage } from "@/features/admin/AdminBookingsPage";
 import { AdminEquipmentPage } from "@/features/admin/AdminEquipmentPage";
 import { AdminRoomsPage } from "@/features/admin/AdminRoomsPage";
 import { AdminUsersPage } from "@/features/admin/AdminUsersPage";
-import { AdminReportsPage } from "@/features/analytics/AdminReportsPage";
+import { AdminReportsPage, HostelReportsPage } from "@/features/analytics/AdminReportsPage";
 import { AttendanceReportsPage } from "@/features/attendance/AttendanceReportsPage";
 import { GenerateAttendancePage } from "@/features/attendance/GenerateAttendancePage";
 import { ScanAttendancePage } from "@/features/attendance/ScanAttendancePage";
@@ -60,6 +60,7 @@ const IMPLEMENTED_PATHS = new Set([
   "/events/new",
   "/notifications",
   "/profile",
+  "/reports/hostel",
   "/admin/notification-settings",
   "/admin/reports",
   "/admin/audit-logs",
@@ -315,6 +316,16 @@ export function App(): React.JSX.Element {
                 element={
                   <AppShell>
                     <ComplaintQueuePage />
+                  </AppShell>
+                }
+              />
+            </Route>
+            <Route element={<RequireRole allow={["warden", "admin"]} />}>
+              <Route
+                path="/reports/hostel"
+                element={
+                  <AppShell>
+                    <HostelReportsPage />
                   </AppShell>
                 }
               />
