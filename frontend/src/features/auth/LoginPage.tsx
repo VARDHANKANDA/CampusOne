@@ -36,8 +36,18 @@ export function LoginPage(): React.JSX.Element {
       await login(values.email, values.password);
       const from = (location.state as { from?: Location })?.from?.pathname ?? "/";
       navigate(from, { replace: true });
-    } catch (err) {
-      setFormError(err instanceof ApiError ? err.message : "Something went wrong. Try again.");
+    } catch (err: unknown) {
+      if (err instanceof ApiError) {
+        setFormError(err.message);
+      } else if (err instanceof Error) {
+        setFormError(
+          err.message === "Network Error"
+            ? "Unable to connect to the backend server. Please verify your connection and API configuration."
+            : err.message,
+        );
+      } else {
+        setFormError("Something went wrong. Try again.");
+      }
     }
   };
 

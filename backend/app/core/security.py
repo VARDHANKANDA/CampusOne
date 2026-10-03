@@ -9,6 +9,7 @@ ADR-021) — which one a given project uses isn't under this app's control, so
 both verification paths are supported, dispatched on the token's own `alg` header.
 """
 
+import logging
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -24,6 +25,8 @@ from app.core.config import get_settings
 from app.core.database import get_db
 from app.core.errors import ForbiddenError, UnauthorizedError
 from app.models.user import Role, User
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -53,14 +56,20 @@ _jwks_keys: list[dict] = []
 _jwks_fetched_at: float = 0.0
 
 
-def _get_jwks(supabase_url: str) -> list[dict]:
+def _get_jwks(supabase_url: str, force_refresh: bool = False) -> list[dict]:
     global _jwks_keys, _jwks_fetched_at
     now = time.monotonic()
-    if not _jwks_keys or now - _jwks_fetched_at > _JWKS_CACHE_TTL_SECONDS:
-        response = httpx.get(f"{supabase_url}/auth/v1/.well-known/jwks.json", timeout=5.0)
-        response.raise_for_status()
-        _jwks_keys = response.json().get("keys", [])
-        _jwks_fetched_at = now
+    clean_url = supabase_url.rstrip("/")
+    if force_refresh or not _jwks_keys or now - _jwks_fetched_at > _JWKS_CACHE_TTL_SECONDS:
+        try:
+            response = httpx.get(f"{clean_url}/auth/v1/.well-known/jwks.json", timeout=5.0)
+            response.raise_for_status()
+            _jwks_keys = response.json().get("keys", [])
+            _jwks_fetched_at = now
+        except Exception as exc:
+            logger.warning("Failed to fetch Supabase JWKS from %s: %s", clean_url, exc)
+            if not _jwks_keys:
+                raise UnauthorizedError("Authentication service is unreachable.") from exc
     return _jwks_keys
 
 
@@ -72,9 +81,11 @@ def _decode_token(token: str) -> dict:
             key: str | dict = settings.jwt_secret
         else:
             kid = jwt.get_unverified_header(token).get("kid")
-            matched = next(
-                (k for k in _get_jwks(settings.supabase_url) if k.get("kid") == kid), None
-            )
+            keys = _get_jwks(settings.supabase_url)
+            matched = next((k for k in keys if k.get("kid") == kid), None)
+            if matched is None:
+                keys = _get_jwks(settings.supabase_url, force_refresh=True)
+                matched = next((k for k in keys if k.get("kid") == kid), None)
             if matched is None:
                 raise UnauthorizedError("Unknown token signing key.")
             key = matched

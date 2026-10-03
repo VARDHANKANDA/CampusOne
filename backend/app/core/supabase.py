@@ -1,6 +1,11 @@
+import logging
+
 from supabase import Client, create_client
 
 from app.core.config import get_settings
+from app.core.errors import AppError
+
+logger = logging.getLogger(__name__)
 
 
 def get_supabase_client() -> Client:
@@ -15,4 +20,19 @@ def get_supabase_client() -> Client:
     TLS handshake per Auth call.
     """
     settings = get_settings()
-    return create_client(settings.supabase_url, settings.supabase_service_key)
+    if not settings.supabase_url or not settings.supabase_service_key:
+        raise AppError(
+            code="SUPABASE_NOT_CONFIGURED",
+            message="Supabase authentication service is not configured on the server.",
+            status_code=500,
+        )
+    try:
+        return create_client(settings.supabase_url, settings.supabase_service_key)
+    except Exception as exc:
+        logger.exception("Failed to initialize Supabase client: %s", exc)
+        raise AppError(
+            code="SUPABASE_INIT_ERROR",
+            message="Failed to initialize authentication client. Verify server config.",
+            status_code=500,
+        ) from exc
+

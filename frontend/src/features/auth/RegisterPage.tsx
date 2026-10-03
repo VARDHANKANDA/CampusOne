@@ -60,10 +60,18 @@ export function RegisterPage(): React.JSX.Element {
     try {
       await registerAccount(values);
       navigate("/", { replace: true });
-    } catch (err) {
-      setFormError(
-        err instanceof ApiError ? err.message : "Could not create your account. Try again.",
-      );
+    } catch (err: unknown) {
+      if (err instanceof ApiError) {
+        setFormError(err.message);
+      } else if (err instanceof Error) {
+        setFormError(
+          err.message === "Network Error"
+            ? "Unable to connect to the backend server. Please verify your connection and API configuration."
+            : err.message,
+        );
+      } else {
+        setFormError("Could not create your account. Try again.");
+      }
     }
   };
 

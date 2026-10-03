@@ -25,28 +25,66 @@ export function AuthCallbackPage(): React.JSX.Element {
       try {
         await completeOAuthLogin(accessToken);
         if (!cancelled) navigate("/", { replace: true });
-      } catch {
-        if (!cancelled) setError("Could not finish signing in. Try again.");
+      } catch (err: unknown) {
+        if (!cancelled) {
+          const message =
+            err instanceof Error
+              ? err.message
+              : "Could not finish signing in with your identity provider. Please try again.";
+          setError(message);
+        }
       }
     }
 
+    // 1. Check for error parameters in URL (from OAuth provider rejection or redirect)
+    const searchParams = new URLSearchParams(window.location.search);
+    const hashString = window.location.hash.startsWith("#")
+      ? window.location.hash.slice(1)
+      : window.location.hash;
+    const hashParams = new URLSearchParams(hashString);
+
+    const oauthError =
+      searchParams.get("error_description") ||
+      searchParams.get("error") ||
+      hashParams.get("error_description") ||
+      hashParams.get("error");
+
+    if (oauthError) {
+      setError(decodeURIComponent(oauthError.replace(/\+/g, " ")));
+      return;
+    }
+
+    // 2. Check for PKCE authorization code
+    const code = searchParams.get("code");
+    if (code) {
+      void supabase.auth.exchangeCodeForSession(code).then(({ data, error: exchangeError }) => {
+        if (exchangeError) {
+          if (!cancelled) setError(exchangeError.message);
+        } else if (data.session?.access_token) {
+          void finish(data.session.access_token);
+        }
+      });
+    }
+
+    // 3. Listen for session event via onAuthStateChange
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.access_token) void finish(session.access_token);
     });
 
-    // Covers the case where the session was already established by the time
-    // this effect runs, so onAuthStateChange's initial fire is missed.
+    // 4. Check existing session if already established
     void supabase.auth.getSession().then(({ data }) => {
       if (data.session?.access_token) void finish(data.session.access_token);
     });
 
     const timeout = setTimeout(() => {
       if (!cancelled && !handledRef.current) {
-        setError("Sign-in didn't complete in time. Try again.");
+        setError(
+          "Sign-in timed out. Please verify your authentication provider configuration and try again.",
+        );
       }
-    }, 10000);
+    }, 15000);
 
     return () => {
       cancelled = true;

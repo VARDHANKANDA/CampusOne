@@ -39,9 +39,8 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/register", response_model=UserProfile, status_code=status.HTTP_201_CREATED)
 def register(payload: RegisterRequest, db: Session = Depends(get_db)) -> UserProfile:
-    supabase = get_supabase_client()
-
     try:
+        supabase = get_supabase_client()
         auth_response = supabase.auth.admin.create_user(
             {
                 "email": payload.email,
@@ -49,6 +48,8 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)) -> UserPro
                 "email_confirm": True,
             }
         )
+    except AppError:
+        raise
     except Exception as exc:  # Supabase SDK raises its own AuthApiError subclasses
         logger.exception("Supabase user creation failed for %s", payload.email)
         raise AppError(
@@ -86,11 +87,13 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)) -> UserPro
 
 @router.post("/login", response_model=TokenResponse)
 def login(payload: LoginRequest) -> TokenResponse:
-    supabase = get_supabase_client()
     try:
+        supabase = get_supabase_client()
         session = supabase.auth.sign_in_with_password(
             {"email": payload.email, "password": payload.password}
         )
+    except AppError:
+        raise
     except Exception as exc:
         # Deliberately generic — do not reveal whether the email exists.
         raise UnauthorizedError("Invalid email or password.") from exc

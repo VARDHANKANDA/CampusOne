@@ -79,12 +79,19 @@ export function OAuthButtons(): React.JSX.Element {
   const handleClick = async (provider: Provider): Promise<void> => {
     setError(null);
     setPendingProvider(provider);
-    const { error: oauthError } = await supabase.auth.signInWithOAuth({
-      provider,
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
-    });
-    if (oauthError) {
-      setError(oauthError.message);
+    try {
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: { redirectTo: `${window.location.origin}/auth/callback` },
+      });
+      if (oauthError) {
+        setError(oauthError.message);
+        setPendingProvider(null);
+      }
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error ? err.message : `Failed to initiate sign in with ${provider}.`;
+      setError(msg);
       setPendingProvider(null);
     }
     // On success the browser navigates away to the provider immediately —
