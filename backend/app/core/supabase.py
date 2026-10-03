@@ -35,4 +35,3 @@ def get_supabase_client() -> Client:
             message="Failed to initialize authentication client. Verify server config.",
             status_code=500,
         ) from exc
-
