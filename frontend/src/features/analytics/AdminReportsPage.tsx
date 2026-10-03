@@ -128,8 +128,12 @@ export function HostelReportsPage(): React.JSX.Element {
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <h1 className="font-display text-2xl text-ink-navy dark:text-brass">Hostel Reports &amp; Analytics</h1>
-        <p className="font-body text-sm text-text-secondary mt-1">Overview of hostel complaint statuses, categories, and resolution priorities.</p>
+        <h1 className="font-display text-2xl text-ink-navy dark:text-brass">
+          Hostel Reports &amp; Analytics
+        </h1>
+        <p className="font-body text-sm text-text-secondary mt-1">
+          Overview of hostel complaint statuses, categories, and resolution priorities.
+        </p>
       </div>
 
       {isLoading ? (
