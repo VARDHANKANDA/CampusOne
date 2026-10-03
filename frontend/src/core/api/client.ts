@@ -7,7 +7,7 @@ import { ApiError, type ApiErrorBody } from "@/core/api/types";
  * the bearer token here, nothing calls axios directly.
  */
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_BASE_URL || "/api/v1",
 });
 
 apiClient.interceptors.request.use((config) => {
