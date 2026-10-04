@@ -62,13 +62,21 @@ export function RegisterPage(): React.JSX.Element {
       navigate("/", { replace: true });
     } catch (err: unknown) {
       if (err instanceof ApiError) {
-        setFormError(err.message);
+        if (err.status === 0 || err.code === "NETWORK_ERROR") {
+          setFormError("Unable to connect to the backend server. Please check your connection.");
+        } else if (err.status === 409 || err.code === "RESOURCE_CONFLICT") {
+          setFormError("An account with this email already exists. Please sign in instead.");
+        } else if (err.status >= 500) {
+          setFormError("Unable to create your account right now. Please try again later.");
+        } else {
+          setFormError(err.message);
+        }
       } else if (err instanceof Error) {
-        setFormError(
-          err.message === "Network Error"
-            ? "Unable to connect to the backend server. Please verify your connection and API configuration."
-            : err.message,
-        );
+        if (err.message === "Network Error" || err.message.includes("Network Error")) {
+          setFormError("Unable to connect to the backend server. Please check your connection.");
+        } else {
+          setFormError("Could not create your account. Please try again.");
+        }
       } else {
         setFormError("Could not create your account. Try again.");
       }

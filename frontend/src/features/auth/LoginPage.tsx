@@ -38,13 +38,21 @@ export function LoginPage(): React.JSX.Element {
       navigate(from, { replace: true });
     } catch (err: unknown) {
       if (err instanceof ApiError) {
-        setFormError(err.message);
+        if (err.status === 0 || err.code === "NETWORK_ERROR") {
+          setFormError("Unable to connect to the backend server. Please check your connection.");
+        } else if (err.status === 401 || err.code === "UNAUTHORIZED") {
+          setFormError("Invalid email or password.");
+        } else if (err.status >= 500) {
+          setFormError("Unable to sign in right now. Please try again later.");
+        } else {
+          setFormError(err.message);
+        }
       } else if (err instanceof Error) {
-        setFormError(
-          err.message === "Network Error"
-            ? "Unable to connect to the backend server. Please verify your connection and API configuration."
-            : err.message,
-        );
+        if (err.message === "Network Error" || err.message.includes("Network Error")) {
+          setFormError("Unable to connect to the backend server. Please check your connection.");
+        } else {
+          setFormError(err.message || "Invalid email or password.");
+        }
       } else {
         setFormError("Something went wrong. Try again.");
       }

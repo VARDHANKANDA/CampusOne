@@ -35,13 +35,19 @@ export function ForgotPasswordPage(): React.JSX.Element {
       setSubmitted(true);
     } catch (err: unknown) {
       if (err instanceof ApiError) {
-        setFormError(err.message);
+        if (err.status === 0 || err.code === "NETWORK_ERROR") {
+          setFormError("Unable to connect to the server. Please check your connection.");
+        } else if (err.status >= 500) {
+          setFormError("Unable to process password reset right now. Please try again later.");
+        } else {
+          setFormError(err.message);
+        }
       } else if (err instanceof Error) {
-        setFormError(
-          err.message === "Network Error"
-            ? "Unable to connect to the server. Please check your connection."
-            : err.message,
-        );
+        if (err.message === "Network Error" || err.message.includes("Network Error")) {
+          setFormError("Unable to connect to the server. Please check your connection.");
+        } else {
+          setFormError(err.message);
+        }
       } else {
         setFormError("Could not submit password reset request. Try again.");
       }

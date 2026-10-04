@@ -1,14 +1,30 @@
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
 from app.core.errors import register_exception_handlers
 from app.core.logging import configure_logging
+from app.core.migrations import run_database_migrations
 
 configure_logging()
 settings = get_settings()
 
-app = FastAPI(title="CampusOne API", version="1.0.0")
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
+    """Application lifespan context manager.
+
+    Executes Alembic migrations to ensure the PostgreSQL database schema is
+    fully initialized before the application begins accepting requests.
+    """
+    run_database_migrations()
+    yield
+
+
+app = FastAPI(title="CampusOne API", version="1.0.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
